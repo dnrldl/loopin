@@ -1,0 +1,19 @@
+# macOS
+.DS_Store
+
+# IntelliJ
+.idea/
+*.iml
+
+# VS Code
+.vscode/
+
+# 로그 파일
+*.log
+
+# 환경 변수
+.env
+
+# 압축 파일
+*.zip
+*.tar.gz
