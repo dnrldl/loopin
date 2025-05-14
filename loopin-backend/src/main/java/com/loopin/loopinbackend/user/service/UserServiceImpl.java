@@ -12,6 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Objects;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -21,7 +24,7 @@ public class UserServiceImpl implements UserService{
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public void register(UserRegisterRequest request) {
+    public String register(UserRegisterRequest request) {
         if (userRepository.existsByEmail(request.email())) {
             throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
         }
@@ -41,7 +44,8 @@ public class UserServiceImpl implements UserService{
                 .emailVerified(false)
                 .build();
 
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        return savedUser.getEmail();
     }
 
     @Override
@@ -51,6 +55,13 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public User findById(Long userId) {
+        return null;
+    }
+
+    @Override
+    public User findByEmail(String email) {
+        User user = userRepository.searchByEmail(email);
+        System.out.println("Objects.toString(user) = " + Objects.toString(user));
         return null;
     }
 

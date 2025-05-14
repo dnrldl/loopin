@@ -49,7 +49,7 @@ public class User extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Role role = Role.USER;
+    private Role role;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -60,7 +60,7 @@ public class User extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Provider provider = Provider.LOCAL;
+    private Provider provider;
 
     private String providerId;
 
