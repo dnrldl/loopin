@@ -9,7 +9,11 @@ public enum ErrorCode {
     USER_NOT_FOUND("U003", "존재하지 않는 사용자입니다.", HttpStatus.NOT_FOUND),
 
     // auth
-    INVALID_PASSWORD("A001", "비밀번호가 일치하지 않습니다.", HttpStatus.UNAUTHORIZED);
+    INVALID_PASSWORD("A001", "비밀번호가 일치하지 않습니다.", HttpStatus.UNAUTHORIZED),
+    UNAUTHORIZED("A002", "인증되지 않은 요청입니다.", HttpStatus.UNAUTHORIZED),
+    ACCESS_DENIED("A003", "접근 권한이 없습니다.", HttpStatus.FORBIDDEN);
+
+
 
     private final String code;
     private final String message;

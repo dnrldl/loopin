@@ -1,7 +1,6 @@
 package com.loopin.loopinbackend.user.service;
 
 import com.loopin.loopinbackend.global.enums.Provider;
-import com.loopin.loopinbackend.user.dto.request.UserLoginRequest;
 import com.loopin.loopinbackend.user.dto.request.UserRegisterRequest;
 import com.loopin.loopinbackend.user.entity.User;
 import com.loopin.loopinbackend.user.enums.Role;
@@ -12,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -49,11 +47,6 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public User login(UserLoginRequest request) {
-        return null;
-    }
-
-    @Override
     public User findById(Long userId) {
         return null;
     }
@@ -63,10 +56,5 @@ public class UserServiceImpl implements UserService{
         User user = userRepository.searchByEmail(email);
         System.out.println("Objects.toString(user) = " + Objects.toString(user));
         return null;
-    }
-
-    @Override
-    public boolean isEmailDuplicated(String email) {
-        return false;
     }
 }
