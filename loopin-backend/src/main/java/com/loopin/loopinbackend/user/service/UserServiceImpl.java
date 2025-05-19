@@ -5,6 +5,7 @@ import com.loopin.loopinbackend.user.dto.request.UserRegisterRequest;
 import com.loopin.loopinbackend.user.entity.User;
 import com.loopin.loopinbackend.user.enums.Role;
 import com.loopin.loopinbackend.user.enums.Status;
+import com.loopin.loopinbackend.user.exception.DuplicateEmailException;
 import com.loopin.loopinbackend.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -23,9 +24,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public String register(UserRegisterRequest request) {
-        if (userRepository.existsByEmail(request.email())) {
-            throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
-        }
+        if (userRepository.existsByEmail(request.email())) throw new DuplicateEmailException();
 
         User user = User.builder()
                 .email(request.email())

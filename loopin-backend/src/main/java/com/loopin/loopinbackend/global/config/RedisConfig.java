@@ -1,5 +1,6 @@
 package com.loopin.loopinbackend.global.config;
 
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
@@ -14,19 +15,20 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import java.time.Duration;
 
 @Configuration
+@EnableCaching
 public class RedisConfig {
     @Bean
-    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory cf) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
-        template.setConnectionFactory(connectionFactory);
+        template.setConnectionFactory(cf);
 
-        // String key serializer
+        // key serializer
         StringRedisSerializer stringSerializer = new StringRedisSerializer();
         template.setKeySerializer(stringSerializer);
         template.setHashKeySerializer(stringSerializer);
 
-        // JSON value serializer (GenericJackson2JsonRedisSerializer)
-        RedisSerializer<Object> jsonSerializer = RedisSerializer.json();
+        // value serializer
+        GenericJackson2JsonRedisSerializer jsonSerializer = new GenericJackson2JsonRedisSerializer();
         template.setValueSerializer(jsonSerializer);
         template.setHashValueSerializer(jsonSerializer);
 
@@ -35,20 +37,16 @@ public class RedisConfig {
     }
 
     @Bean
-    public RedisCacheManager cacheManager(RedisConnectionFactory factory) {
+    public RedisCacheManager cacheManager(RedisConnectionFactory cf) {
         RedisCacheConfiguration cacheConfig = RedisCacheConfiguration.defaultCacheConfig()
-                .serializeKeysWith(                         // key 직렬화
-                        RedisSerializationContext.SerializationPair
-                                .fromSerializer(new StringRedisSerializer()))
-                .serializeValuesWith(                       // value 직렬화
-                        RedisSerializationContext.SerializationPair
-                                .fromSerializer(new GenericJackson2JsonRedisSerializer()))
-                .disableCachingNullValues()                 // null 값 캐싱 방지
-                .entryTtl(Duration.ofMinutes(10));          // 기본 만료 시간
+                .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
+                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()))
+                .disableCachingNullValues()
+                .entryTtl(Duration.ofMinutes(10));
 
-        return RedisCacheManager.RedisCacheManagerBuilder
-                .fromConnectionFactory(factory)
+        return RedisCacheManager.builder(cf)
                 .cacheDefaults(cacheConfig)
+                .transactionAware()
                 .build();
     }
 }
