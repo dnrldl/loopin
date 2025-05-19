@@ -21,12 +21,18 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     public void commence(HttpServletRequest request, HttpServletResponse response,
                          AuthenticationException authException) throws IOException {
 
+        String message = authException.getMessage();
         ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
 
-        ApiErrorResponse body = ApiErrorResponse.from(errorCode);
+        ApiErrorResponse errorResponse = new ApiErrorResponse(
+                false,
+                ErrorCode.UNAUTHORIZED.getCode(),
+                message,
+                ErrorCode.UNAUTHORIZED.getStatus().value()
+        );
 
         response.setStatus(errorCode.getStatus().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.getWriter().write(mapper.writeValueAsString(body));
+        response.getWriter().write(mapper.writeValueAsString(errorResponse));
     }
 }

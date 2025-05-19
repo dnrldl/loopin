@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 
 import java.time.LocalDate;
-@Schema(description = "회원가입 요청 DTO")
+@Schema(name = "UserRegisterRequest", description = "유저 회원가입 요청 DTO")
 public record UserRegisterRequest(
         @Schema(description = "이메일", example = "loopin@loopin.com")
         @NotBlank String email,

@@ -29,6 +29,13 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
+    // redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    // Spring Cache
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+    // Jackson
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+
     // QueryDsl
     implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
     annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
