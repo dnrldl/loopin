@@ -21,18 +21,9 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response,
                        AccessDeniedException accessDeniedException) throws IOException, ServletException {
+        ApiErrorResponse errorResponse = ApiErrorResponse.from(ErrorCode.ACCESS_DENIED);
 
-        String message = accessDeniedException.getMessage();
-        ErrorCode errorCode = ErrorCode.ACCESS_DENIED;
-
-        ApiErrorResponse errorResponse = new ApiErrorResponse(
-                false,
-                errorCode.getCode(),
-                message,
-                errorCode.getStatus().value()
-        );
-
-        response.setStatus(errorCode.getStatus().value());
+        response.setStatus(ErrorCode.ACCESS_DENIED.getStatus().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.getWriter().write(mapper.writeValueAsString(errorResponse));
     }

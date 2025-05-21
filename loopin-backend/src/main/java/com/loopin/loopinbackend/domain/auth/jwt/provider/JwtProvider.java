@@ -1,7 +1,11 @@
 package com.loopin.loopinbackend.domain.auth.jwt.provider;
 
+import com.loopin.loopinbackend.domain.auth.exception.ExpiredCustomJwtException;
+import com.loopin.loopinbackend.domain.auth.exception.InvalidJwtException;
 import com.loopin.loopinbackend.domain.auth.model.CustomUserDetails;
 import com.loopin.loopinbackend.domain.user.enums.Role;
+import com.loopin.loopinbackend.global.error.BaseException;
+import com.loopin.loopinbackend.global.error.ErrorCode;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -66,7 +70,6 @@ public class JwtProvider {
     public String extractUsername(String token) { return extractClaims(token).getSubject(); }
     public long extractExpiration(String token) { return extractClaims(token).getExpiration().getTime(); }
 
-
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder()
@@ -75,11 +78,11 @@ public class JwtProvider {
                     .parseClaimsJws(token);
             return true;
         } catch (ExpiredJwtException e) {
-            throw new JwtException("토큰이 만료되었습니다.");
+            throw new ExpiredCustomJwtException();
         } catch (MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
-            throw new JwtException("잘못된 토큰입니다.");
+            throw new InvalidJwtException();
         } catch (Exception e) {
-            throw new JwtException("토큰 검증 중 오류가 발생했습니다.");
+            throw new BaseException(ErrorCode.JWT_VALIDATION_ERROR);
         }
     }
 

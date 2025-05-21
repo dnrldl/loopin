@@ -3,7 +3,7 @@ package com.loopin.loopinbackend.domain.user.service;
 import com.loopin.loopinbackend.domain.user.dto.request.UserRegisterRequest;
 import com.loopin.loopinbackend.domain.user.enums.Role;
 import com.loopin.loopinbackend.domain.user.enums.Status;
-import com.loopin.loopinbackend.global.enums.Provider;
+import com.loopin.loopinbackend.domain.user.enums.Provider;
 import com.loopin.loopinbackend.domain.user.entity.User;
 import com.loopin.loopinbackend.domain.user.exception.DuplicateEmailException;
 import com.loopin.loopinbackend.domain.user.repository.UserRepository;

@@ -2,8 +2,8 @@ package com.loopin.loopinbackend.domain.user.dto.response;
 
 import com.loopin.loopinbackend.domain.user.enums.Role;
 import com.loopin.loopinbackend.domain.user.enums.Status;
-import com.loopin.loopinbackend.global.enums.Gender;
-import com.loopin.loopinbackend.global.enums.Provider;
+import com.loopin.loopinbackend.domain.user.enums.Gender;
+import com.loopin.loopinbackend.domain.user.enums.Provider;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDate;

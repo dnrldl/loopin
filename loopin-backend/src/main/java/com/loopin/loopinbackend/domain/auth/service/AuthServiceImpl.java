@@ -24,6 +24,7 @@ public class AuthServiceImpl {
     public UserLoginResponse login(UserLoginRequest request) {
         String email = request.email();
         String password = request.password();
+
         try {
             Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
 
@@ -33,13 +34,14 @@ public class AuthServiceImpl {
             // redis 설정
             String redisKey = "refresh:" + email;
             long now = System.currentTimeMillis();
-            Long expiration = jwtProvider.extractExpiration(refreshToken);
+            long expiration = jwtProvider.extractExpiration(refreshToken);
 
             redisTemplate.opsForValue().set(redisKey, refreshToken, Duration.ofMillis(expiration - now));
 
             return new UserLoginResponse(accessToken, refreshToken);
         } catch (Exception ex) {
-            throw new InvalidLoginValueException();
+            System.out.println(ex.getMessage());
+            throw new RuntimeException();
         }
     }
 }

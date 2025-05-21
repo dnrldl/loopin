@@ -4,6 +4,11 @@ spring:
   jackson:
     serialization:
       fail-on-empty-beans: false
+# GlobalExceptionHandler 잘못된 경로나 메서드 설정시 설정
+#  web:
+#    resources:
+#      add-mappings: false
+
 
 logging:
   level:

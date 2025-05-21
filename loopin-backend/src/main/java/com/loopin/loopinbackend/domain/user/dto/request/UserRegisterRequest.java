@@ -1,7 +1,7 @@
 package com.loopin.loopinbackend.domain.user.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.loopin.loopinbackend.global.enums.Gender;
+import com.loopin.loopinbackend.domain.user.enums.Gender;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 

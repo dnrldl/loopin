@@ -4,15 +4,15 @@ package com.loopin.loopinbackend.global.error;
 import lombok.Getter;
 
 @Getter
-public abstract class BaseException extends RuntimeException {
+public class BaseException extends RuntimeException {
     private final ErrorCode errorCode;
 
-    protected BaseException(ErrorCode errorCode) {
+    public BaseException(ErrorCode errorCode) {
         super(errorCode.getMessage());
         this.errorCode = errorCode;
     }
 
-    protected BaseException(ErrorCode errorCode, Throwable cause) {
+    public BaseException(ErrorCode errorCode, Throwable cause) {
         super(errorCode.getMessage(), cause);
         this.errorCode = errorCode;
     }

@@ -5,6 +5,13 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public enum ErrorCode {
+    INTERNAL_SERVER_ERROR("E001", "알 수 없는 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+
+    // global
+    NOT_FOUND("G001", "요청하신 URL을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    METHOD_NOT_ALLOWED("G002", "허용되지 않은 HTTP 메서드입니다.", HttpStatus.METHOD_NOT_ALLOWED),
+
+
     // user
     DUPLICATE_EMAIL("U001", "이미 사용 중인 이메일입니다.", HttpStatus.BAD_REQUEST),
     DUPLICATE_NICKNAME("U002", "이미 사용 중인 닉네임입니다.", HttpStatus.BAD_REQUEST),

@@ -3,6 +3,8 @@ package com.loopin.loopinbackend.global.response;
 import com.loopin.loopinbackend.global.error.ErrorCode;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.time.LocalDateTime;
+
 @Schema(name = "ApiErrorResponse", description = "API 에러 응답 래퍼")
 public record ApiErrorResponse(
         @Schema(description = "요청 성공 여부", example = "false")
@@ -15,16 +17,28 @@ public record ApiErrorResponse(
         String message,
 
         @Schema(description = "HTTP 상태 코드", example = "400")
-        int status
+        int status,
+
+        @Schema(description = "API 응답 시간", example = "2025-05-21T13:50:00")
+        LocalDateTime timestamp
 ) {
-    public ApiErrorResponse(ErrorCode errorCode) {
-        this(false,
+    public static ApiErrorResponse from(ErrorCode errorCode) {
+        return new ApiErrorResponse(
+                false,
                 errorCode.getCode(),
                 errorCode.getMessage(),
-                errorCode.getStatus().value());
+                errorCode.getStatus().value(),
+                LocalDateTime.now()
+        );
     }
 
-    public static ApiErrorResponse from(ErrorCode errorCode) {
-        return new ApiErrorResponse(errorCode);
+    public static ApiErrorResponse of(boolean success, String code, String message, int status) {
+        return new ApiErrorResponse(
+                success,
+                code,
+                message,
+                status,
+                LocalDateTime.now()
+        );
     }
 }
