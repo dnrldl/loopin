@@ -32,7 +32,7 @@ dependencies {
     // redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     // Spring Cache
-    implementation 'org.springframework.boot:spring-boot-starter-cache'
+//    implementation 'org.springframework.boot:spring-boot-starter-cache'
     // Jackson
     implementation 'com.fasterxml.jackson.core:jackson-databind'
 

@@ -9,7 +9,6 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
-import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.time.Duration;
@@ -36,17 +35,18 @@ public class RedisConfig {
         return template;
     }
 
-    @Bean
-    public RedisCacheManager cacheManager(RedisConnectionFactory cf) {
-        RedisCacheConfiguration cacheConfig = RedisCacheConfiguration.defaultCacheConfig()
-                .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
-                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()))
-                .disableCachingNullValues()
-                .entryTtl(Duration.ofMinutes(10));
-
-        return RedisCacheManager.builder(cf)
-                .cacheDefaults(cacheConfig)
-                .transactionAware()
-                .build();
-    }
+    // 캐싱
+//    @Bean
+//    public RedisCacheManager cacheManager(RedisConnectionFactory cf) {
+//        RedisCacheConfiguration cacheConfig = RedisCacheConfiguration.defaultCacheConfig()
+//                .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
+//                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()))
+//                .disableCachingNullValues()
+//                .entryTtl(Duration.ofMinutes(10));
+//
+//        return RedisCacheManager.builder(cf)
+//                .cacheDefaults(cacheConfig)
+//                .transactionAware()
+//                .build();
+//    }
 }
