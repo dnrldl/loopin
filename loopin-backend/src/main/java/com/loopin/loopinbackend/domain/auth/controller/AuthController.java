@@ -40,7 +40,7 @@ public class AuthController {
             HttpServletResponse response) {
         UserLoginResponse tokens = authService.login(userLoginRequest);
 
-        ResponseCookie cookie = ResponseCookie.from("refreshToken", tokens.refreshToken())
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", tokens.getRefreshToken())
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
@@ -48,6 +48,6 @@ public class AuthController {
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
-        return ResponseEntity.ok(ApiResponse.success(new UserLoginResponse(tokens.accessToken(), null)));
+        return ResponseEntity.ok(ApiResponse.success(new UserLoginResponse(tokens.getAccessToken(), null)));
     }
 }

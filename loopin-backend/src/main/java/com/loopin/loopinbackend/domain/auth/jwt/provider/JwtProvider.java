@@ -1,5 +1,6 @@
 package com.loopin.loopinbackend.domain.auth.jwt.provider;
 
+import com.loopin.loopinbackend.domain.auth.exception.EmptyTokenException;
 import com.loopin.loopinbackend.domain.auth.exception.ExpiredCustomJwtException;
 import com.loopin.loopinbackend.domain.auth.exception.InvalidJwtException;
 import com.loopin.loopinbackend.domain.auth.model.CustomUserDetails;
@@ -71,6 +72,8 @@ public class JwtProvider {
     public long extractExpiration(String token) { return extractClaims(token).getExpiration().getTime(); }
 
     public boolean validateToken(String token) {
+        if (token == null || token.isEmpty()) throw new EmptyTokenException();
+
         try {
             Jwts.parserBuilder()
                     .setSigningKey(getSignKey())

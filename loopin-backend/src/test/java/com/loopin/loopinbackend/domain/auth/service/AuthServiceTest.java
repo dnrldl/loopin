@@ -39,8 +39,10 @@ class AuthServiceTest {
     @InjectMocks
     private AuthServiceImpl authService;
 
-    private final UserLoginRequest loginRequest = new UserLoginRequest(
-            "test@loopin.com", "password123!");
+    private final UserLoginRequest loginRequest = UserLoginRequest.builder()
+            .email("test@test.com")
+            .password("password!1")
+            .build();
 
     @Test
     @DisplayName("로그인 성공 시 AccessToken, RefreshToken 이 반환된다")

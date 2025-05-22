@@ -1,19 +1,18 @@
 package com.loopin.loopinbackend.domain.user.service;
 
 import com.loopin.loopinbackend.domain.user.dto.request.UserRegisterRequest;
+import com.loopin.loopinbackend.domain.user.dto.response.UserInfoResponse;
+import com.loopin.loopinbackend.domain.user.entity.User;
+import com.loopin.loopinbackend.domain.user.enums.Provider;
 import com.loopin.loopinbackend.domain.user.enums.Role;
 import com.loopin.loopinbackend.domain.user.enums.Status;
-import com.loopin.loopinbackend.domain.user.enums.Provider;
-import com.loopin.loopinbackend.domain.user.entity.User;
-import com.loopin.loopinbackend.domain.user.exception.DuplicateEmailException;
-import com.loopin.loopinbackend.domain.user.exception.DuplicateNicknameException;
 import com.loopin.loopinbackend.domain.user.repository.UserRepository;
-import jakarta.transaction.Transactional;
+import com.loopin.loopinbackend.domain.user.validator.UserRegisterValidator;
+import com.loopin.loopinbackend.domain.auth.security.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Objects;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,21 +21,21 @@ public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserRegisterValidator userRegisterValidator;
 
     @Override
     public String register(UserRegisterRequest request) {
-        if (userRepository.existsByEmail(request.email())) throw new DuplicateEmailException();
-        if (userRepository.existsByNickname(request.nickname())) throw new DuplicateNicknameException();
+        userRegisterValidator.validate(request);
 
         User user = User.builder()
-                .email(request.email())
-                .password(passwordEncoder.encode(request.password()))
-                .nickname(request.nickname())
-                .firstName(request.firstName())
-                .lastName(request.lastName())
-                .phoneNumber(request.phoneNumber())
-                .gender(request.gender())
-                .birth(request.birth())
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .nickname(request.getNickname())
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .phoneNumber(request.getPhoneNumber())
+                .gender(request.getGender())
+                .birth(request.getBirth())
                 .role(Role.USER)
                 .status(Status.ACTIVE)
                 .provider(Provider.LOCAL)
@@ -48,14 +47,9 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public User findById(Long userId) {
-        return null;
-    }
-
-    @Override
-    public User findByEmail(String email) {
-        User user = userRepository.searchByEmail(email);
-        System.out.println("Objects.toString(user) = " + Objects.toString(user));
-        return null;
+    @Transactional(readOnly = true)
+    public UserInfoResponse getMyInfo() {
+        User currentUser = SecurityUtils.getCurrentUser();
+        return UserInfoResponse.of(currentUser);
     }
 }

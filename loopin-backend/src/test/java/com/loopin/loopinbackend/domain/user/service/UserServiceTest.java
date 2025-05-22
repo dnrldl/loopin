@@ -50,23 +50,23 @@ class UserServiceTest {
     @DisplayName("정상적으로 회원가입이 되면 이메일을 반환")
     void 회원가입_정상_테스트() {
         // given
-        given(userRepository.existsByEmail(req.email())).willReturn(false);
-        given(userRepository.existsByNickname(req.nickname())).willReturn(false);
-        given(passwordEncoder.encode(req.password())).willReturn("encodedPwd");
-        given(userRepository.save(any(User.class))).willReturn(User.builder().email(req.email()).build());
+        given(userRepository.existsByEmail(req.getEmail())).willReturn(false);
+        given(userRepository.existsByNickname(req.getNickname())).willReturn(false);
+        given(passwordEncoder.encode(req.getPassword())).willReturn("encodedPwd");
+        given(userRepository.save(any(User.class))).willReturn(User.builder().email(req.getEmail()).build());
 
         // when
         String result = userService.register(req);
 
         // then
-        assertThat(result).isEqualTo(req.email());
+        assertThat(result).isEqualTo(req.getEmail());
         verify(userRepository).save(any(User.class));
     }
 
     @Test
     void 회원가입_이메일_중복_예외() {
         // given
-        given(userRepository.existsByEmail(req.email())).willReturn(true);
+        given(userRepository.existsByEmail(req.getEmail())).willReturn(true);
 
         // when & then
         assertThatThrownBy(() -> userService.register(req))
@@ -77,8 +77,8 @@ class UserServiceTest {
     @Test
     void 회원가입_닉네임_중복_예외() {
         // given
-        given(userRepository.existsByEmail(req.email())).willReturn(false);
-        given(userRepository.existsByNickname(req.nickname())).willReturn(true);
+        given(userRepository.existsByEmail(req.getEmail())).willReturn(false);
+        given(userRepository.existsByNickname(req.getNickname())).willReturn(true);
 
         // when & then
         assertThatThrownBy(() -> userService.register(req))

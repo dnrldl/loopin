@@ -22,8 +22,8 @@ public class AuthServiceImpl {
     private final RedisTemplate<String, Object> redisTemplate;
 
     public UserLoginResponse login(UserLoginRequest request) {
-        String email = request.email();
-        String password = request.password();
+        String email = request.getEmail();
+        String password = request.getPassword();
 
         try {
             Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));

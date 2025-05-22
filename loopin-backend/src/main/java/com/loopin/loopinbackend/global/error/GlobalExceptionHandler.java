@@ -83,7 +83,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BaseException.class)
     public ResponseEntity<ApiErrorResponse> handleBaseException(BaseException e) {
         ErrorCode errorCode = e.getErrorCode();
-        log.error("[{}] {}: {}", errorCode.getCode(), errorCode.getStatus(), errorCode.getMessage(), e);
+        log.warn("[{}] {}: {}", errorCode.getCode(), errorCode.getStatus(), errorCode.getMessage(), e);
 
         ApiErrorResponse body = ApiErrorResponse.from(e.getErrorCode());
         return ResponseEntity
