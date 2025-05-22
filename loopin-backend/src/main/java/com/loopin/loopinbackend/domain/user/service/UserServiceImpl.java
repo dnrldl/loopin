@@ -6,6 +6,7 @@ import com.loopin.loopinbackend.domain.user.enums.Status;
 import com.loopin.loopinbackend.domain.user.enums.Provider;
 import com.loopin.loopinbackend.domain.user.entity.User;
 import com.loopin.loopinbackend.domain.user.exception.DuplicateEmailException;
+import com.loopin.loopinbackend.domain.user.exception.DuplicateNicknameException;
 import com.loopin.loopinbackend.domain.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class UserServiceImpl implements UserService{
     @Override
     public String register(UserRegisterRequest request) {
         if (userRepository.existsByEmail(request.email())) throw new DuplicateEmailException();
+        if (userRepository.existsByNickname(request.nickname())) throw new DuplicateNicknameException();
 
         User user = User.builder()
                 .email(request.email())

@@ -27,7 +27,7 @@ public class JwtProvider {
         CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
         String username = userDetails.getUsername();
         Long userId = userDetails.getUserId();
-        Role role = userDetails.getUser().getRole();
+        Role role = userDetails.user().getRole();
 
         return generateToken(username, userId, role, ACCESS_TOKEN_VALIDITY);
     }
@@ -36,7 +36,7 @@ public class JwtProvider {
         CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
         String username = userDetails.getUsername();
         Long userId = userDetails.getUserId();
-        Role role = userDetails.getUser().getRole();
+        Role role = userDetails.user().getRole();
 
         return generateToken(username, userId, role, REFRESH_TOKEN_VALIDITY);
     }
