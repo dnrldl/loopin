@@ -1,6 +1,7 @@
 package com.loopin.loopinbackend.domain.user.controller;
 
 import com.loopin.loopinbackend.domain.user.dto.request.UserPasswordUpdateRequest;
+import com.loopin.loopinbackend.domain.user.dto.request.UserProfileUpdateRequest;
 import com.loopin.loopinbackend.domain.user.service.UserServiceImpl;
 import com.loopin.loopinbackend.global.response.ApiErrorResponse;
 import com.loopin.loopinbackend.global.response.ApiResponse;
@@ -46,6 +47,19 @@ public class UserPrivateController {
     @PutMapping("/password")
     public ResponseEntity<ApiResponse<Void>> updatePassword(@Valid @RequestBody UserPasswordUpdateRequest request) {
         userService.updatePassword(request);
+        return ResponseEntity.ok(ApiResponse.success(null));
+    }
+
+    @Operation(summary = "내 프로필 변경",
+            description = "현재 로그인된 사용자의 프로필을 변경합니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "프로필 변경 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "입력값 검증 실패", content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증되지 않은 사용자", content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
+    })
+    @PutMapping("/profile")
+    public ResponseEntity<ApiResponse<Void>> updateProfile(@Valid @RequestBody UserProfileUpdateRequest request) {
+        userService.updateProfile(request);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 }

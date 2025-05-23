@@ -25,16 +25,16 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 30)
     private String firstName;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 30)
     private String lastName;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true, length = 60)
     private String nickname;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 15)
     private String phoneNumber;
 
     @Enumerated(EnumType.STRING)
@@ -43,6 +43,7 @@ public class User extends BaseEntity {
     private String profileImageUrl;
 
     // 자기소개
+    @Column(length = 300)
     private String bio;
 
     @Enumerated(EnumType.STRING)
