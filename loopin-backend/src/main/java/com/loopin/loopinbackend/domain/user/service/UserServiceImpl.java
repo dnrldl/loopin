@@ -1,5 +1,6 @@
 package com.loopin.loopinbackend.domain.user.service;
 
+import com.loopin.loopinbackend.domain.user.dto.request.UserPasswordUpdateRequest;
 import com.loopin.loopinbackend.domain.user.dto.request.UserRegisterRequest;
 import com.loopin.loopinbackend.domain.user.dto.response.UserInfoResponse;
 import com.loopin.loopinbackend.domain.user.entity.User;
@@ -47,9 +48,11 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public void updatePassword(String password) {
+    public void updatePassword(UserPasswordUpdateRequest request) {
         User currentUser = SecurityUtils.getCurrentUser();
-        currentUser.setPassword(passwordEncoder.encode(password));
+        currentUser.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        userRepository.save(currentUser);
     }
 
     @Override
