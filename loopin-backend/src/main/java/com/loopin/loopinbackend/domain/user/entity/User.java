@@ -6,10 +6,7 @@ import com.loopin.loopinbackend.global.entity.BaseEntity;
 import com.loopin.loopinbackend.domain.user.enums.Gender;
 import com.loopin.loopinbackend.domain.user.enums.Provider;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -17,6 +14,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "users")
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class User extends BaseEntity {
@@ -27,16 +25,16 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 30)
     private String firstName;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 30)
     private String lastName;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true, length = 60)
     private String nickname;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 15)
     private String phoneNumber;
 
     @Enumerated(EnumType.STRING)
@@ -45,6 +43,7 @@ public class User extends BaseEntity {
     private String profileImageUrl;
 
     // 자기소개
+    @Column(length = 300)
     private String bio;
 
     @Enumerated(EnumType.STRING)

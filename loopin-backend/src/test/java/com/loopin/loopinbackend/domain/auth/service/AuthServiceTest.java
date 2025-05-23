@@ -2,7 +2,7 @@ package com.loopin.loopinbackend.domain.auth.service;
 
 import com.loopin.loopinbackend.domain.auth.dto.request.UserLoginRequest;
 import com.loopin.loopinbackend.domain.auth.dto.response.UserLoginResponse;
-import com.loopin.loopinbackend.domain.auth.exception.InvalidLoginValueException;
+import com.loopin.loopinbackend.domain.auth.exception.InvalidLoginException;
 import com.loopin.loopinbackend.domain.auth.jwt.provider.JwtProvider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,7 +18,6 @@ import org.springframework.security.core.Authentication;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -74,6 +73,6 @@ class AuthServiceTest {
 
         // when & then
         assertThatThrownBy(() -> authService.login(loginRequest))
-                .isInstanceOf(InvalidLoginValueException.class);
+                .isInstanceOf(InvalidLoginException.class);
     }
 }

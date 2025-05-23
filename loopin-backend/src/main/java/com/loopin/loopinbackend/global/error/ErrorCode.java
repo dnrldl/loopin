@@ -18,7 +18,7 @@ public enum ErrorCode {
     INVALID_INPUT_VALUE("U004", "회원가입 입력 형식이 맞지 않습니다.", HttpStatus.BAD_REQUEST),
 
     // auth
-    INVALID_EMAIL_OR_PASSWORD("A001", "이메일 또는 비밀번호가 일치하지 않습니다.", HttpStatus.UNAUTHORIZED),
+    INVALID_LOGIN("A001", "자격 증명에 실패하였습니다.", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED("A002", "인증이 필요합니다.", HttpStatus.UNAUTHORIZED),
     ACCESS_DENIED("A003", "접근 권한이 필요합니다.", HttpStatus.FORBIDDEN),
 

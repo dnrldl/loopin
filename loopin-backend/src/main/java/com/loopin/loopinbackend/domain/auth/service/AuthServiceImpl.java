@@ -3,11 +3,12 @@ package com.loopin.loopinbackend.domain.auth.service;
 
 import com.loopin.loopinbackend.domain.auth.dto.request.UserLoginRequest;
 import com.loopin.loopinbackend.domain.auth.dto.response.UserLoginResponse;
-import com.loopin.loopinbackend.domain.auth.exception.InvalidLoginValueException;
+import com.loopin.loopinbackend.domain.auth.exception.InvalidLoginException;
 import com.loopin.loopinbackend.domain.auth.jwt.provider.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -39,9 +40,9 @@ public class AuthServiceImpl {
             redisTemplate.opsForValue().set(redisKey, refreshToken, Duration.ofMillis(expiration - now));
 
             return new UserLoginResponse(accessToken, refreshToken);
-        } catch (Exception ex) {
+        } catch (BadCredentialsException ex) {
             System.out.println(ex.getMessage());
-            throw new RuntimeException();
+            throw new InvalidLoginException();
         }
     }
 }
