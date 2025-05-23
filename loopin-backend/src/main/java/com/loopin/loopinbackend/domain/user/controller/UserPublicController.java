@@ -3,10 +3,11 @@ package com.loopin.loopinbackend.domain.user.controller;
 import com.loopin.loopinbackend.domain.user.dto.request.UserRegisterRequest;
 import com.loopin.loopinbackend.domain.user.service.UserServiceImpl;
 import com.loopin.loopinbackend.global.response.ApiErrorResponse;
-import com.loopin.loopinbackend.global.response.ApiResponse;
+import com.loopin.loopinbackend.global.response.ApiSuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -28,17 +29,17 @@ public class UserPublicController {
     @Operation(summary = "회원가입",
             description = "사용자가 이메일, 비밀번호 등 정보를 입력하여 회원가입합니다.")
     @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "회원가입 성공"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "입력값 검증 실패", content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "409", description = "중복된 입력값", content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
+            @ApiResponse(responseCode = "201", description = "회원가입 성공"),
+            @ApiResponse(responseCode = "400", description = "입력값 검증 실패", content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
+            @ApiResponse(responseCode = "409", description = "중복된 입력값", content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
     })
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<String>> register(
+    public ResponseEntity<ApiSuccessResponse<String>> register(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "회원가입 요청 DTO", required = true)
             @Valid @RequestBody UserRegisterRequest request
     ) {
         String response = userService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED)
-                            .body(ApiResponse.success(response));
+                            .body(ApiSuccessResponse.success(response));
     }
 }

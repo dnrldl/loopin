@@ -1,6 +1,6 @@
 package com.loopin.loopinbackend.domain.user.service;
 
-import com.loopin.loopinbackend.domain.user.dto.request.UserPasswordUpdateRequest;
+import com.loopin.loopinbackend.domain.auth.security.util.SecurityUtils;
 import com.loopin.loopinbackend.domain.user.dto.request.UserProfileUpdateRequest;
 import com.loopin.loopinbackend.domain.user.dto.request.UserRegisterRequest;
 import com.loopin.loopinbackend.domain.user.dto.response.UserInfoResponse;
@@ -8,9 +8,10 @@ import com.loopin.loopinbackend.domain.user.entity.User;
 import com.loopin.loopinbackend.domain.user.enums.Provider;
 import com.loopin.loopinbackend.domain.user.enums.Role;
 import com.loopin.loopinbackend.domain.user.enums.Status;
+import com.loopin.loopinbackend.domain.user.exception.InvalidPasswordException;
 import com.loopin.loopinbackend.domain.user.repository.UserRepository;
+import com.loopin.loopinbackend.domain.user.validator.UserPasswordUpdateValidator;
 import com.loopin.loopinbackend.domain.user.validator.UserRegisterValidator;
-import com.loopin.loopinbackend.domain.auth.security.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ public class UserServiceImpl implements UserService{
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserRegisterValidator userRegisterValidator;
+    private final UserPasswordUpdateValidator userPasswordUpdateValidator;
 
     @Override
     public String register(UserRegisterRequest request) {
@@ -49,10 +51,11 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public void updatePassword(UserPasswordUpdateRequest request) {
+    public void updatePassword(String oldPassword, String newPassword) {
         User currentUser = SecurityUtils.getCurrentUser();
-        currentUser.setPassword(passwordEncoder.encode(request.getPassword()));
+        userPasswordUpdateValidator.validate(passwordEncoder, currentUser, oldPassword, newPassword);
 
+        currentUser.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(currentUser);
     }
 
@@ -66,6 +69,15 @@ public class UserServiceImpl implements UserService{
 
         userRepository.save(currentUser);
     }
+
+    @Override
+    public void deleteUser(String password) {
+        User currentUser = SecurityUtils.getCurrentUser();
+        if (!passwordEncoder.matches(password, currentUser.getPassword())) throw new InvalidPasswordException();
+
+        userRepository.delete(currentUser);
+    }
+
 
     @Override
     @Transactional(readOnly = true)
