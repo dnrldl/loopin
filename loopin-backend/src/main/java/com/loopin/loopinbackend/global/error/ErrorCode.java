@@ -15,7 +15,11 @@ public enum ErrorCode {
     DUPLICATE_EMAIL("U001", "이미 사용 중인 이메일입니다.", HttpStatus.BAD_REQUEST),
     DUPLICATE_NICKNAME("U002", "이미 사용 중인 닉네임입니다.", HttpStatus.BAD_REQUEST),
     USER_NOT_FOUND("U003", "존재하지 않는 사용자입니다.", HttpStatus.NOT_FOUND),
-    INVALID_INPUT_VALUE("U004", "회원가입 입력 형식이 맞지 않습니다.", HttpStatus.BAD_REQUEST),
+    INVALID_INPUT_VALUE("U004", "요청 입력 형식이 맞지 않습니다.", HttpStatus.BAD_REQUEST),
+    INVALID_PASSWORD("U005", "기존 비밀번호가 일치하지 않습니다.", HttpStatus.BAD_REQUEST),
+    PASSWORD_SAME_AS_OLD("U006", "새 비밀번호는 기존 비밀번호와 같을 수 없습니다.", HttpStatus.BAD_REQUEST),
+    DUPLICATE_PHONE_NUMBER("U007", "이미 사용 중인 전화번호입니다.", HttpStatus.BAD_REQUEST),
+
 
     // auth
     INVALID_LOGIN("A001", "자격 증명에 실패하였습니다.", HttpStatus.UNAUTHORIZED),

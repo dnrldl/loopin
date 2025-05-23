@@ -46,7 +46,7 @@ public class UserPrivateController {
     })
     @PutMapping("/password")
     public ResponseEntity<ApiResponse<Void>> updatePassword(@Valid @RequestBody UserPasswordUpdateRequest request) {
-        userService.updatePassword(request);
+        userService.updatePassword(request.getOldPassword(), request.getNewPassword());
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 

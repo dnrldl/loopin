@@ -41,6 +41,7 @@ public class GlobalExceptionHandler {
     // @RequestBody DTO 검증 실패
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiErrorResponse> handleRequestBodyValidation(MethodArgumentNotValidException e) {
+        ErrorCode errorCode = ErrorCode.INVALID_INPUT_VALUE;
 
         String message = e.getBindingResult().getFieldErrors().stream()
                 .map(err -> String.format("[%s] %s", err.getField(), err.getDefaultMessage()))
@@ -48,9 +49,9 @@ public class GlobalExceptionHandler {
 
         ApiErrorResponse body = ApiErrorResponse.of(
                 false,
-                ErrorCode.INVALID_INPUT_VALUE.getCode(),
+                errorCode.getCode(),
                 message,
-                ErrorCode.INVALID_INPUT_VALUE.getStatus().value()
+                errorCode.getStatus().value()
         );
 
         return ResponseEntity
@@ -61,6 +62,7 @@ public class GlobalExceptionHandler {
     // @RequestParam, @PathVariable, @Validated 파라미터 검증 실패
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ApiErrorResponse> handleParamValidation(ConstraintViolationException e) {
+        ErrorCode errorCode = ErrorCode.INVALID_INPUT_VALUE;
 
         String message = e.getConstraintViolations().stream()
                 .map(v -> String.format("[%s] %s",
@@ -70,9 +72,9 @@ public class GlobalExceptionHandler {
 
         ApiErrorResponse body = ApiErrorResponse.of(
                 false,
-                ErrorCode.INVALID_INPUT_VALUE.getCode(),
+                errorCode.getCode(),
                 message,
-                ErrorCode.INVALID_INPUT_VALUE.getStatus().value()
+                errorCode.getStatus().value()
         );
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
