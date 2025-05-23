@@ -8,6 +8,7 @@ import com.loopin.loopinbackend.domain.user.entity.User;
 import com.loopin.loopinbackend.domain.user.enums.Provider;
 import com.loopin.loopinbackend.domain.user.enums.Role;
 import com.loopin.loopinbackend.domain.user.enums.Status;
+import com.loopin.loopinbackend.domain.user.exception.InvalidPasswordException;
 import com.loopin.loopinbackend.domain.user.repository.UserRepository;
 import com.loopin.loopinbackend.domain.user.validator.UserPasswordUpdateValidator;
 import com.loopin.loopinbackend.domain.user.validator.UserRegisterValidator;
@@ -68,6 +69,15 @@ public class UserServiceImpl implements UserService{
 
         userRepository.save(currentUser);
     }
+
+    @Override
+    public void deleteUser(String password) {
+        User currentUser = SecurityUtils.getCurrentUser();
+        if (!passwordEncoder.matches(password, currentUser.getPassword())) throw new InvalidPasswordException();
+
+        userRepository.delete(currentUser);
+    }
+
 
     @Override
     @Transactional(readOnly = true)

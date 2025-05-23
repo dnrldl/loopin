@@ -9,9 +9,11 @@ import com.loopin.loopinbackend.domain.user.entity.User;
 public interface UserService {
     String register(UserRegisterRequest request);
 
+    UserInfoResponse getMyInfo();
+
     void updatePassword(String oldPassword, String newPassword);
 
     void updateProfile(UserProfileUpdateRequest request);
 
-    UserInfoResponse getMyInfo();
+    void deleteUser(String password);
 }
