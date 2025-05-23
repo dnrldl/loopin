@@ -7,5 +7,7 @@ import com.loopin.loopinbackend.domain.user.entity.User;
 public interface UserService {
     String register(UserRegisterRequest request);
 
+    void updatePassword(String password);
+
     UserInfoResponse getMyInfo();
 }

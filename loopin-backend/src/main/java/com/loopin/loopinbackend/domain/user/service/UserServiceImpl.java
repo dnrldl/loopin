@@ -47,6 +47,12 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    public void updatePassword(String password) {
+        User currentUser = SecurityUtils.getCurrentUser();
+        currentUser.setPassword(passwordEncoder.encode(password));
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public UserInfoResponse getMyInfo() {
         User currentUser = SecurityUtils.getCurrentUser();

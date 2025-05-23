@@ -6,10 +6,7 @@ import com.loopin.loopinbackend.global.entity.BaseEntity;
 import com.loopin.loopinbackend.domain.user.enums.Gender;
 import com.loopin.loopinbackend.domain.user.enums.Provider;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -17,6 +14,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "users")
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class User extends BaseEntity {
