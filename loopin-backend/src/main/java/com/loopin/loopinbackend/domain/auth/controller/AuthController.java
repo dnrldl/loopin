@@ -4,10 +4,11 @@ import com.loopin.loopinbackend.domain.auth.dto.request.UserLoginRequest;
 import com.loopin.loopinbackend.domain.auth.dto.response.UserLoginResponse;
 import com.loopin.loopinbackend.domain.auth.service.AuthServiceImpl;
 import com.loopin.loopinbackend.global.response.ApiErrorResponse;
-import com.loopin.loopinbackend.global.response.ApiResponse;
+import com.loopin.loopinbackend.global.response.ApiSuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
@@ -30,11 +31,11 @@ public class AuthController {
     @Operation(summary = "로그인",
             description = "사용자가 이메일, 비밀번호를 입력하여 로그인합니다.")
     @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "로그인 성공"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "입력값 검증 실패", content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
+            @ApiResponse(responseCode = "200", description = "로그인 성공"),
+            @ApiResponse(responseCode = "400", description = "입력값 검증 실패", content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
     })
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<UserLoginResponse>> login(
+    public ResponseEntity<ApiSuccessResponse<UserLoginResponse>> login(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "로그인 요청 DTO", required = true)
             @RequestBody UserLoginRequest userLoginRequest,
             HttpServletResponse response) {
@@ -48,6 +49,6 @@ public class AuthController {
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
-        return ResponseEntity.ok(ApiResponse.success(new UserLoginResponse(tokens.getAccessToken(), null)));
+        return ResponseEntity.ok(ApiSuccessResponse.success(new UserLoginResponse(tokens.getAccessToken(), null)));
     }
 }
