@@ -3,6 +3,7 @@ package com.loopin.loopinbackend.domain.auth.security.util;
 import com.loopin.loopinbackend.domain.auth.exception.UnauthorizedAccessException;
 import com.loopin.loopinbackend.domain.auth.model.CustomUserDetails;
 import com.loopin.loopinbackend.domain.user.entity.User;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -25,5 +26,10 @@ public class SecurityUtils {
     public static String getCurrentUsername() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return auth.getName();
+    }
+
+    public static String resolveToken(HttpServletRequest request) {
+        String bearer = request.getHeader("Authorization");
+        return (bearer != null && bearer.startsWith("Bearer ")) ? bearer.substring(7) : null;
     }
 }

@@ -21,11 +21,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.Duration;
+
 @Tag(name = "Auth (Public)", description = "인증이 필요 없는 인증 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/public/auth")
-public class AuthController {
+public class AuthPublicController {
     private final AuthServiceImpl authService;
 
     @Operation(summary = "로그인",
@@ -46,6 +48,7 @@ public class AuthController {
                 .secure(true)
                 .path("/")
                 .sameSite("Strict")
+                .maxAge(Duration.ofDays(7))
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 

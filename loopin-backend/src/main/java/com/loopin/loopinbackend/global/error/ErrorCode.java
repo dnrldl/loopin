@@ -30,7 +30,8 @@ public enum ErrorCode {
     INVALID_JWT("J001", "유효하지 않은 토큰입니다.", HttpStatus.UNAUTHORIZED),
     EXPIRED_JWT("J002", "토큰이 만료되었습니다.", HttpStatus.UNAUTHORIZED),
     JWT_VALIDATION_ERROR("J003", "JWT 검증 중 예기치 못한 오류가 발생했습니다.", HttpStatus.UNAUTHORIZED),
-    EMPTY_JWT("J004", "토큰이 비어있습니다.", HttpStatus.UNAUTHORIZED);
+    EMPTY_JWT("J004", "토큰이 비어있습니다.", HttpStatus.UNAUTHORIZED),
+    BLACKLISTED_TOKEN("J005", "토큰이 블랙리스트에 있습니다.", HttpStatus.UNAUTHORIZED);
 
 
     private final String code;

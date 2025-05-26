@@ -70,6 +70,9 @@ public class JwtProvider {
 
     public String extractUsername(String token) { return extractClaims(token).getSubject(); }
     public long extractExpiration(String token) { return extractClaims(token).getExpiration().getTime(); }
+    public Long extractUserId(String token) {
+        return Long.parseLong(extractClaims(token).get("userId").toString());
+    }
 
     public boolean validateToken(String token) {
         if (token == null || token.isEmpty()) throw new EmptyTokenException();
@@ -93,6 +96,5 @@ public class JwtProvider {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
         return Keys.hmacShaKeyFor(keyBytes);
     }
-
 }
 
