@@ -19,7 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "User (private)", description = "인증이 필요한 유저 API")
+@Tag(name = "User (Private)", description = "인증이 필요한 유저 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/private/users")

@@ -16,12 +16,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
+import java.util.Map;
 
 @Tag(name = "Auth (Public)", description = "인증이 필요 없는 인증 API")
 @RestController
@@ -53,5 +51,27 @@ public class AuthPublicController {
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
         return ResponseEntity.ok(ApiSuccessResponse.success(new UserLoginResponse(tokens.getAccessToken(), null)));
+    }
+
+    @Operation(summary = "엑세스 토큰 재발급",
+            description = "사용자의 리프레시 토큰으로 액세스 토큰을 재발급합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "토큰 재발급 성공"),
+            @ApiResponse(responseCode = "400", description = "토큰 재발급 실패", content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
+    })
+    @PostMapping("/reissue")
+    public ResponseEntity<ApiSuccessResponse<String>> reissue(@CookieValue("refreshToken") String refreshToken, HttpServletResponse response) {
+        Map<String, String> tokens = authService.reissue(refreshToken);
+
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", tokens.get("refreshToken"))
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .sameSite("Strict")
+                .maxAge(Duration.ofDays(7))
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
+        return ResponseEntity.ok(ApiSuccessResponse.success(tokens.get("accessToken")));
     }
 }
