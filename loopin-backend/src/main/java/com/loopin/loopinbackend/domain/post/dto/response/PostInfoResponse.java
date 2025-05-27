@@ -1,14 +1,12 @@
 package com.loopin.loopinbackend.domain.post.dto.response;
 
 
-import com.loopin.loopinbackend.domain.post.entity.Post;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Getter
 @Builder
@@ -17,10 +15,8 @@ import java.util.List;
 public class PostInfoResponse {
     private Long id;
     private String content;
+    private String authorNickname;
     private int depth;
-    private List<PostInfoResponse> children = new ArrayList<>();
-
-    public static PostInfoResponse from(Post post) {
-        return new PostInfoResponse(post.getId(), post.getContent(), post.getDepth(), new ArrayList<>());
-    }
+    protected LocalDateTime createdAt;
+    protected LocalDateTime updatedAt;
 }

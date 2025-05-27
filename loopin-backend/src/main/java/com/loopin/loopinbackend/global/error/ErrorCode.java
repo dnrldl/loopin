@@ -20,6 +20,9 @@ public enum ErrorCode {
     PASSWORD_SAME_AS_OLD("U006", "새 비밀번호는 기존 비밀번호와 같을 수 없습니다.", HttpStatus.BAD_REQUEST),
     DUPLICATE_PHONE_NUMBER("U007", "이미 사용 중인 전화번호입니다.", HttpStatus.BAD_REQUEST),
 
+    // post
+    POST_NOT_FOUND("P001", "게시글을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    POST_NOT_OWNER("P002", "게시글 작성자가 아닙니다..", HttpStatus.FORBIDDEN),
 
     // auth
     INVALID_LOGIN("A001", "자격 증명에 실패하였습니다.", HttpStatus.UNAUTHORIZED),
