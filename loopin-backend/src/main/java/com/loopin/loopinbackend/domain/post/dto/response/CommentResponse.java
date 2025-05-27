@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -35,5 +36,18 @@ public class CommentResponse {
     protected LocalDateTime updatedAt;
 
     @Schema(description = "대댓글 목록 (depth+1)")
-    private List<CommentResponse> replies;
+    private List<CommentResponse> children;
+
+    public static CommentResponse from(FlatCommentDto dto) {
+        return new CommentResponse(
+                dto.getId(),
+                dto.getParentId(),
+                dto.getContent(),
+                dto.getAuthorNickname(),
+                dto.getDepth(),
+                dto.getCreatedAt(),
+                dto.getUpdateAt(),
+                new ArrayList<>()
+        );
+    }
 }

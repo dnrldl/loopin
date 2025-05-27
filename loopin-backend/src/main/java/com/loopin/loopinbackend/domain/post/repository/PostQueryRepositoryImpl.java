@@ -45,7 +45,7 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
         String sql = """
                 WITH RECURSIVE comment_tree AS (
                     -- 1단계: 이 게시글(postId)의 자식 댓글부터 시작
-                    SELECT p.id, p.parent_id, u.nickname, p.content, p.depth, p.created_at
+                    SELECT p.id, p.parent_id, u.nickname, p.content, p.depth, p.created_at, p.updated_at
                     FROM posts p
                     JOIN users u ON p.author_id = u.id
                     WHERE p.parent_id = :postId
@@ -53,7 +53,7 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
                     UNION ALL
                     
                     -- 2단계 이후: 이전 단계에서 조회된 댓글의 자식들을 계속 탐색
-                    SELECT c.id, c.parent_id, u.nickname, c.content, c.depth, c.created_at
+                    SELECT c.id, c.parent_id, u.nickname, c.content, c.depth, c.created_at, c.updated_at
                     FROM posts c
                     JOIN users u ON c.author_id = u.id
                     JOIN comment_tree ct ON c.parent_id = ct.id
@@ -71,7 +71,8 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
                         (String) row[2],              // author_id
                         (String) row[3],                            // content0
                         ((Number) row[4]).intValue(),               // depth
-                        ((Timestamp) row[5]).toLocalDateTime()      // created_at
+                        ((Timestamp) row[5]).toLocalDateTime(),      // created_at
+                        ((Timestamp) row[6]).toLocalDateTime()      // updated_at
                 ))
                 .toList();
     }

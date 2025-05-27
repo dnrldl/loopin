@@ -16,4 +16,5 @@ public class FlatCommentDto {
     String content;
     int depth;
     LocalDateTime createdAt;
+    LocalDateTime updateAt;
 }
