@@ -38,6 +38,19 @@ public class CommentResponse {
     @Schema(description = "대댓글 목록 (depth+1)")
     private List<CommentResponse> children;
 
+    @Override
+    public String toString() {
+        return "CommentResponse{" +
+                "id=" + id +
+                ", parentId=" + parentId +
+                ", authorNickname=" + authorNickname +
+                ", content='" + content + '\'' +
+                ", depth=" + depth +
+                ", createdAt=" + createdAt +
+                ", children=" + children +
+                '}';
+    }
+
     public static CommentResponse from(FlatCommentDto dto) {
         return new CommentResponse(
                 dto.getId(),

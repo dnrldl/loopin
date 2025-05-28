@@ -17,4 +17,16 @@ public class FlatCommentDto {
     int depth;
     LocalDateTime createdAt;
     LocalDateTime updateAt;
+
+    @Override
+    public String toString() {
+        return "FlatCommentDto{" +
+                "id=" + id +
+                ", parentId=" + parentId +
+                ", authorNickname=" + authorNickname +
+                ", content='" + content + '\'' +
+                ", depth=" + depth +
+                ", createdAt=" + createdAt +
+                '}';
+    }
 }

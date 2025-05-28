@@ -7,10 +7,7 @@ import com.loopin.loopinbackend.domain.post.repository.PostQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -24,11 +21,12 @@ public class PostQueryServiceImpl implements PostQueryService {
     }
 
     @Override
-    public List<FlatCommentDto> getFlatCommentTree(Long postId) {
-        return postQueryRepository.findCommentTreeByPostId(postId);
+    public List<CommentResponse> getCommentTree(Long postId) {
+        List<FlatCommentDto> result = postQueryRepository.findCommentTreeByPostId(postId);
+        return buildCommentTree(result, postId);
     }
 
-    private List<CommentResponse> buildCommentTree(List<FlatCommentDto> flatList) {
+    private List<CommentResponse> buildCommentTree(List<FlatCommentDto> flatList, Long postId) {
         Map<Long, CommentResponse> idToNode = new LinkedHashMap<>();
         List<CommentResponse> roots = new ArrayList<>();
 
@@ -36,7 +34,7 @@ public class PostQueryServiceImpl implements PostQueryService {
             CommentResponse node = CommentResponse.from(dto);
             idToNode.put(node.getId(), node);
 
-            if (node.getParentId() == null) {
+            if (Objects.equals(node.getParentId(), postId)) { // postId를 루트 parentId로 간주
                 roots.add(node);
             } else {
                 CommentResponse parent = idToNode.get(node.getParentId());
@@ -48,5 +46,6 @@ public class PostQueryServiceImpl implements PostQueryService {
 
         return roots;
     }
+
 
 }

@@ -1,9 +1,8 @@
 package com.loopin.loopinbackend.domain.post.controller;
 
-import com.loopin.loopinbackend.domain.post.dto.FlatCommentDto;
+import com.loopin.loopinbackend.domain.post.dto.response.CommentResponse;
 import com.loopin.loopinbackend.domain.post.dto.response.PostInfoResponse;
 import com.loopin.loopinbackend.domain.post.service.query.PostQueryService;
-import com.loopin.loopinbackend.domain.post.service.command.PostService;
 import com.loopin.loopinbackend.global.response.ApiErrorResponse;
 import com.loopin.loopinbackend.global.response.ApiSuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,7 +13,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -23,7 +25,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/public/posts")
 public class PostPublicController {
-    private final PostService postService;
     private final PostQueryService postQueryService;
 
     @Operation(summary = "게시글 단건 조회",
@@ -46,9 +47,9 @@ public class PostPublicController {
             @ApiResponse(responseCode = "404", description = "조회 실패", content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
     })
     @GetMapping("/{postId}/comments")
-    public ResponseEntity<ApiSuccessResponse<List<FlatCommentDto>>> getFlatComments(@PathVariable Long postId) {
-        List<FlatCommentDto> response = postQueryService.getFlatCommentTree(postId);
+    public ResponseEntity<ApiSuccessResponse<List<CommentResponse>>> getFlatComments(@PathVariable Long postId) {
+        List<CommentResponse> responses = postQueryService.getCommentTree(postId);
 
-        return ResponseEntity.ok(ApiSuccessResponse.success(response));
+        return ResponseEntity.ok(ApiSuccessResponse.success(responses));
     }
 }
