@@ -22,7 +22,10 @@ public enum ErrorCode {
 
     // post
     POST_NOT_FOUND("P001", "게시글을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
-    POST_NOT_OWNER("P002", "게시글 작성자가 아닙니다..", HttpStatus.FORBIDDEN),
+    POST_NOT_OWNER("P002", "게시글의 작성자가 아닙니다.", HttpStatus.FORBIDDEN),
+
+    // post_like
+    POST_LIKE_NOT_FOUND("PL001", "현재 유저의 해당 게시글 좋아요 기록을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 
     // auth
     INVALID_LOGIN("A001", "자격 증명에 실패하였습니다.", HttpStatus.UNAUTHORIZED),
