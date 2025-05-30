@@ -1,10 +1,12 @@
 package com.loopin.loopinbackend.domain.post.controller;
 
-
 import com.loopin.loopinbackend.domain.auth.security.util.SecurityUtils;
 import com.loopin.loopinbackend.domain.post.dto.request.PostCreateRequest;
 import com.loopin.loopinbackend.domain.post.dto.request.PostUpdateRequest;
+import com.loopin.loopinbackend.domain.post.dto.response.CommentResponse;
+import com.loopin.loopinbackend.domain.post.dto.response.PostInfoResponse;
 import com.loopin.loopinbackend.domain.post.service.command.PostService;
+import com.loopin.loopinbackend.domain.post.service.query.PostQueryService;
 import com.loopin.loopinbackend.global.response.ApiErrorResponse;
 import com.loopin.loopinbackend.global.response.ApiSuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,13 +20,45 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "Post (Private)", description = "인증이 필요한 게시글 API")
+import java.util.List;
+
+@Tag(name = "Post", description = "게시글 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/private/posts")
-public class PostPrivateController {
-    private final PostService postService;
+@RequestMapping("/api/public/posts")
+public class PostController {
 
+    private final PostService postService;
+    private final PostQueryService postQueryService;
+
+    // public
+    @Operation(summary = "게시글 단건 조회",
+            description = "게시글 ID를 지용해서 게시글 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "404", description = "조회 실패", content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
+    })
+    @GetMapping("/{postId}")
+    public ResponseEntity<ApiSuccessResponse<PostInfoResponse>> getPostInfo(@PathVariable Long postId) {
+        PostInfoResponse postInfo = postQueryService.getPostInfo(postId);
+
+        return ResponseEntity.ok(ApiSuccessResponse.success(postInfo));
+    }
+
+    @Operation(summary = "게시글 댓글 트리 조회",
+            description = "게시글 ID를 지용해서 게시글 댓글트리를 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "404", description = "조회 실패", content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
+    })
+    @GetMapping("/{postId}/comments")
+    public ResponseEntity<ApiSuccessResponse<List<CommentResponse>>> getFlatComments(@PathVariable Long postId) {
+        List<CommentResponse> responses = postQueryService.getCommentTree(postId);
+
+        return ResponseEntity.ok(ApiSuccessResponse.success(responses));
+    }
+
+    // private
     @Operation(summary = "게시글 생성",
             description = "로그인한 사용자의 ID, 게시글 내용으로 게시글을 생성합니다.")
     @ApiResponses({

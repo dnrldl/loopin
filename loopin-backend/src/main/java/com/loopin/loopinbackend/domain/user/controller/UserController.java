@@ -1,10 +1,13 @@
 package com.loopin.loopinbackend.domain.user.controller;
 
+import com.loopin.loopinbackend.domain.post.dto.response.CommentResponse;
+import com.loopin.loopinbackend.domain.post.dto.response.PostInfoResponse;
+import com.loopin.loopinbackend.domain.post.service.query.PostQueryService;
 import com.loopin.loopinbackend.domain.user.dto.request.UserDeleteRequest;
 import com.loopin.loopinbackend.domain.user.dto.request.UserPasswordUpdateRequest;
 import com.loopin.loopinbackend.domain.user.dto.request.UserProfileUpdateRequest;
 import com.loopin.loopinbackend.domain.user.dto.response.UserInfoResponse;
-import com.loopin.loopinbackend.domain.user.service.UserServiceImpl;
+import com.loopin.loopinbackend.domain.user.service.UserService;
 import com.loopin.loopinbackend.global.response.ApiErrorResponse;
 import com.loopin.loopinbackend.global.response.ApiSuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,12 +22,45 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "User (Private)", description = "인증이 필요한 유저 API")
+import java.util.List;
+
+@Tag(name = "User", description = "유저 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/private/users")
-public class UserPrivateController {
-    private final UserServiceImpl userService;
+@RequestMapping("/api/users")
+public class UserController {
+
+    private final UserService userService;
+    private final PostQueryService postQueryService;
+
+    // public
+    @Operation(summary = "게시글 단건 조회",
+            description = "게시글 ID를 지용해서 게시글 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "404", description = "조회 실패", content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
+    })
+    @GetMapping("/{postId}")
+    public ResponseEntity<ApiSuccessResponse<PostInfoResponse>> getPostInfo(@PathVariable Long postId) {
+        PostInfoResponse postInfo = postQueryService.getPostInfo(postId);
+
+        return ResponseEntity.ok(ApiSuccessResponse.success(postInfo));
+    }
+
+    @Operation(summary = "게시글 댓글 트리 조회",
+            description = "게시글 ID를 지용해서 게시글 댓글트리를 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "404", description = "조회 실패", content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
+    })
+    @GetMapping("/{postId}/comments")
+    public ResponseEntity<ApiSuccessResponse<List<CommentResponse>>> getFlatComments(@PathVariable Long postId) {
+        List<CommentResponse> responses = postQueryService.getCommentTree(postId);
+
+        return ResponseEntity.ok(ApiSuccessResponse.success(responses));
+    }
+
+    // private
     @Operation(summary = "내 정보 조회",
             description = "사용자 정보를 조회합니다.")
     @ApiResponses({
