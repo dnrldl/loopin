@@ -25,6 +25,16 @@ public class PostInfoResponse {
     @Schema(description = "계층 깊이", example = "0은 원글, 1이상은 댓글")
     private int depth;
 
+    @Schema(description = "댓글 수", example = "99")
+    private int commentCount;
+    @Schema(description = "좋아요 수", example = "99")
+    private int likeCount;
+    @Schema(description = "공유 수", example = "99")
+    private int shareCount;
+
+    @Schema(description = "로그인한 유저의 좋아요 여부", example = "true")
+    private boolean isLiked;
+
     @Schema(description = "게시글 생성일", example = "2025-01-01T09:00:00", type = "string", format = "date-time")
     protected LocalDateTime createdAt;
     @Schema(description = "게시글 변경일", example = "2025-01-01T09:00:00", type = "string", format = "date-time")

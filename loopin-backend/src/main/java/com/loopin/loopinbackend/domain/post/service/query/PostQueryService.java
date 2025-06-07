@@ -9,4 +9,6 @@ public interface PostQueryService {
     PostInfoResponse getPostInfo(Long postId);
 
     List<CommentResponse> getCommentTree(Long postId);
+
+    List<PostInfoResponse> getPosts(Long lastId, int size, Long userId);
 }

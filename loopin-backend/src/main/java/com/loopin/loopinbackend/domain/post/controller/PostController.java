@@ -1,5 +1,6 @@
 package com.loopin.loopinbackend.domain.post.controller;
 
+import com.loopin.loopinbackend.domain.auth.model.CustomUserDetails;
 import com.loopin.loopinbackend.domain.auth.security.util.SecurityUtils;
 import com.loopin.loopinbackend.domain.post.dto.request.PostCreateRequest;
 import com.loopin.loopinbackend.domain.post.dto.request.PostUpdateRequest;
@@ -18,6 +19,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,7 +27,7 @@ import java.util.List;
 @Tag(name = "Post", description = "게시글 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/public/posts")
+@RequestMapping("/api/posts")
 public class PostController {
 
     private final PostService postService;
@@ -39,10 +41,29 @@ public class PostController {
             @ApiResponse(responseCode = "404", description = "조회 실패", content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
     })
     @GetMapping("/{postId}")
-    public ResponseEntity<ApiSuccessResponse<PostInfoResponse>> getPostInfo(@PathVariable Long postId) {
+    public ResponseEntity<ApiSuccessResponse<PostInfoResponse>> getPost(@PathVariable Long postId) {
         PostInfoResponse postInfo = postQueryService.getPostInfo(postId);
 
         return ResponseEntity.ok(ApiSuccessResponse.success(postInfo));
+    }
+
+    @Operation(summary = "게시글 복수건 조회",
+            description = "게시글 ID를 지용해서 게시글 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "404", description = "조회 실패", content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
+    })
+    @GetMapping
+    public ResponseEntity<ApiSuccessResponse<List<PostInfoResponse>>> getPosts(
+            @RequestParam(required = false) Long lastId,
+            @RequestParam(defaultValue = "10") int size,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        Long userId = null;
+        if (userDetails != null) userId = userDetails.getUserId();
+        List<PostInfoResponse> responses = postQueryService.getPosts(lastId, size, userId);
+
+        return ResponseEntity.ok(ApiSuccessResponse.success(responses));
     }
 
     @Operation(summary = "게시글 댓글 트리 조회",
@@ -67,12 +88,12 @@ public class PostController {
             @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자", content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
     })
     @PostMapping
-    public ResponseEntity<ApiSuccessResponse<Void>> createPost(@RequestBody PostCreateRequest request) {
+    public ResponseEntity<ApiSuccessResponse<Long>> createPost(@RequestBody PostCreateRequest request) {
         Long currentUserId = SecurityUtils.getCurrentUser().getId();
 
-        postService.createPost(request, currentUserId);
+        Long postId = postService.createPost(request, currentUserId);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiSuccessResponse.success(null));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiSuccessResponse.success(postId));
     }
 
     @Operation(summary = "게시글 변경",

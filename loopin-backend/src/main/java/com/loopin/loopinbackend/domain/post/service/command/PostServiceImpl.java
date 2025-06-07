@@ -18,7 +18,7 @@ public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
 
     @Override
-    public void createPost(PostCreateRequest request, Long userId) {
+    public Long createPost(PostCreateRequest request, Long userId) {
         int depth = 0;
 
         // 원글이 아닌 댓글이라면
@@ -28,12 +28,12 @@ public class PostServiceImpl implements PostService {
             depth = parent.getDepth() + 1;
         }
 
-        postRepository.save(Post.builder()
+        return postRepository.save(Post.builder()
                 .authorId(userId)
                 .content(request.getContent())
                 .parentId(request.getParentId())
                 .depth(depth)
-                .build());
+                .build()).getId();
     }
 
     @Override

@@ -9,4 +9,6 @@ public interface PostQueryRepository {
     PostInfoResponse findPostById(Long postId);
 
     List<FlatCommentDto> findCommentTreeByPostId(Long postId);
+
+    List<PostInfoResponse> findPosts(Long lastId, int size, Long userId);
 }

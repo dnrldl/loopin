@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -26,6 +27,10 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
                                 p.content,
                                 u.nickname,
                                 p.depth,
+                                p.commentCount,
+                                p.likeCount,
+                                p.shareCount,
+                                false,
                                 p.createdAt,
                                 p.updatedAt
                             )
@@ -48,7 +53,7 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
                     SELECT p.id, p.parent_id, u.nickname, p.content, p.depth, p.created_at, p.updated_at
                     FROM posts p
                     JOIN users u ON p.author_id = u.id
-                    WHERE p.parent_id = :postId
+                    WHERE p.parent_id = CAST(:postId AS BIGINT)
                     
                     UNION ALL
                     
@@ -62,7 +67,9 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
                 ORDER BY depth, created_at;
                 """;
 
-        List<Object[]> resultList = em.createNativeQuery(sql).setParameter("postId", postId).getResultList();
+        List<Object[]> resultList = em.createNativeQuery(sql)
+                .setParameter("postId", postId)
+                .getResultList();
 
         return resultList.stream()
                 .map(row -> new FlatCommentDto(
@@ -75,5 +82,61 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
                         ((Timestamp) row[6]).toLocalDateTime()      // updated_at
                 ))
                 .toList();
+    }
+
+    @Override
+    public List<PostInfoResponse> findPosts(Long lastId, int size, Long userId) {
+        String sql = """
+        SELECT
+            p.id,
+            p.content,
+            u.nickname AS author_nickname,
+            0 AS depth,
+            (SELECT COUNT(*) FROM posts c WHERE c.parent_id = p.id) AS comment_count,
+            (SELECT COUNT(*) FROM post_likes pl WHERE pl.post_id = p.id) AS like_count,
+            0 AS share_count,
+            CASE
+                WHEN CAST(:userId AS BIGINT) IS NULL THEN FALSE
+                ELSE EXISTS (
+                    SELECT 1 FROM post_likes pl WHERE pl.post_id = p.id AND pl.user_id = CAST(:userId AS BIGINT)
+                )
+            END AS isLiked,
+            p.created_at,
+            p.updated_at
+        FROM posts p
+        JOIN users u ON p.author_id = u.id
+        WHERE (CAST(:lastId AS BIGINT) IS NULL OR p.id < CAST(:lastId AS BIGINT))
+        AND p.parent_id IS NULL
+        ORDER BY p.id DESC
+        LIMIT CAST(:size AS BIGINT)
+        """;
+
+        List<Object[]> resultList = em.createNativeQuery(sql)
+                .setParameter("lastId", lastId)
+                .setParameter("size", size)
+                .setParameter("userId", userId)
+                .getResultList();
+
+        return resultList.stream()
+                .map(row -> {
+                    Long id = ((Number) row[0]).longValue();
+                    String content = (String) row[1];
+                    String nickname = (String) row[2];
+                    int depth = ((Number) row[3]).intValue();
+                    int commentCount = ((Number) row[4]).intValue();
+                    int likeCount = ((Number) row[5]).intValue();
+                    int shareCount = ((Number) row[6]).intValue();
+                    boolean isLikedByMe = row[7] != null && ((Boolean) row[7]);
+                    LocalDateTime createdAt = row[8] != null ? ((Timestamp) row[8]).toLocalDateTime() : null;
+                    LocalDateTime updatedAt = row[9] != null ? ((Timestamp) row[9]).toLocalDateTime() : null;
+
+                    return new PostInfoResponse(
+                            id, content, nickname, depth,
+                            commentCount, likeCount, shareCount,
+                            isLikedByMe, createdAt, updatedAt
+                    );
+                })
+                .toList();
+
     }
 }

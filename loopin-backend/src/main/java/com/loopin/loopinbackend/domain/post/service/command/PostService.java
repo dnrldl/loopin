@@ -4,7 +4,7 @@ import com.loopin.loopinbackend.domain.post.dto.request.PostCreateRequest;
 import com.loopin.loopinbackend.domain.post.dto.request.PostUpdateRequest;
 
 public interface PostService {
-    void createPost(PostCreateRequest request, Long userId);
+    Long createPost(PostCreateRequest request, Long userId);
 
     void updatePost(PostUpdateRequest request, Long postId, Long userId);
 

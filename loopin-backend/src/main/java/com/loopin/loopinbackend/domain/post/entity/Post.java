@@ -26,5 +26,5 @@ public class Post extends BaseEntity {
 
     private int likeCount = 0;
     private int shareCount = 0;
-    private int childCount = 0;
+    private int commentCount = 0;
 }

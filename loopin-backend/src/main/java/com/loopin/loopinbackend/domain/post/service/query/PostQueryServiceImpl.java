@@ -6,24 +6,33 @@ import com.loopin.loopinbackend.domain.post.dto.response.PostInfoResponse;
 import com.loopin.loopinbackend.domain.post.repository.PostQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class PostQueryServiceImpl implements PostQueryService {
 
     private final PostQueryRepository postQueryRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public PostInfoResponse getPostInfo(Long postId) {
         return postQueryRepository.findPostById(postId);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<CommentResponse> getCommentTree(Long postId) {
         List<FlatCommentDto> result = postQueryRepository.findCommentTreeByPostId(postId);
         return buildCommentTree(result, postId);
+    }
+
+    @Override
+    public List<PostInfoResponse> getPosts(Long lastId, int size, Long userId) {
+        return postQueryRepository.findPosts(lastId, size, userId);
     }
 
     private List<CommentResponse> buildCommentTree(List<FlatCommentDto> flatList, Long postId) {
@@ -43,9 +52,6 @@ public class PostQueryServiceImpl implements PostQueryService {
                 }
             }
         }
-
         return roots;
     }
-
-
 }
