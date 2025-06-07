@@ -1,6 +1,7 @@
 package com.loopin.loopinbackend.global.error;
 
 import com.loopin.loopinbackend.global.response.ApiErrorResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.internal.engine.path.PathImpl;
@@ -19,29 +20,37 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-
     // 잘못된 경로로 요청
     @ExceptionHandler({NoHandlerFoundException.class, NoResourceFoundException.class})
-    public ResponseEntity<ApiErrorResponse> handleNotFound(Exception e) {
-        log.info(e.getMessage());
-        ApiErrorResponse body = ApiErrorResponse.from(ErrorCode.NOT_FOUND);
+    public ResponseEntity<ApiErrorResponse> handleNotFound(Exception e, HttpServletRequest request) {
+        ErrorCode errorCode = ErrorCode.NOT_FOUND;
+
+        errorLog(errorCode, request);
+
+        ApiErrorResponse body = ApiErrorResponse.from(errorCode);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
     }
 
 
     // 잘못된 메서드로 요청 예) GET 으로 요청해야하는데 POST 로 요청
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<ApiErrorResponse> handleMethodNotAllowed(HttpRequestMethodNotSupportedException e) {
+    public ResponseEntity<ApiErrorResponse> handleMethodNotAllowed(HttpRequestMethodNotSupportedException e, HttpServletRequest request) {
+        ErrorCode errorCode = ErrorCode.METHOD_NOT_ALLOWED;
+
+        errorLog(errorCode, request);
+
         return ResponseEntity
                 .status(HttpStatus.METHOD_NOT_ALLOWED)
-                .body(ApiErrorResponse.from(ErrorCode.METHOD_NOT_ALLOWED));
+                .body(ApiErrorResponse.from(errorCode));
     }
 
 
     // @RequestBody DTO 검증 실패
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiErrorResponse> handleRequestBodyValidation(MethodArgumentNotValidException e) {
+    public ResponseEntity<ApiErrorResponse> handleRequestBodyValidation(MethodArgumentNotValidException e, HttpServletRequest request) {
         ErrorCode errorCode = ErrorCode.INVALID_INPUT_VALUE;
+
+        errorLog(errorCode, request);
 
         String message = e.getBindingResult().getFieldErrors().stream()
                 .map(err -> String.format("[%s] %s", err.getField(), err.getDefaultMessage()))
@@ -61,8 +70,10 @@ public class GlobalExceptionHandler {
 
     // @RequestParam, @PathVariable, @Validated 파라미터 검증 실패
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ApiErrorResponse> handleParamValidation(ConstraintViolationException e) {
+    public ResponseEntity<ApiErrorResponse> handleParamValidation(ConstraintViolationException e, HttpServletRequest request) {
         ErrorCode errorCode = ErrorCode.INVALID_INPUT_VALUE;
+
+        errorLog(errorCode, request);
 
         String message = e.getConstraintViolations().stream()
                 .map(v -> String.format("[%s] %s",
@@ -83,9 +94,10 @@ public class GlobalExceptionHandler {
 
     // BaseException (비즈니스 예외)
     @ExceptionHandler(BaseException.class)
-    public ResponseEntity<ApiErrorResponse> handleBaseException(BaseException e) {
+    public ResponseEntity<ApiErrorResponse> handleBaseException(BaseException e, HttpServletRequest request) {
         ErrorCode errorCode = e.getErrorCode();
-        log.warn("[{}] {}: {}", errorCode.getCode(), errorCode.getStatus(), errorCode.getMessage(), e);
+
+        errorLog(errorCode, request);
 
         ApiErrorResponse body = ApiErrorResponse.from(e.getErrorCode());
         return ResponseEntity
@@ -95,14 +107,24 @@ public class GlobalExceptionHandler {
 
     // 서버 내부 예기치 못한 예외
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiErrorResponse> handleUnexpected(Exception e) {
+    public ResponseEntity<ApiErrorResponse> handleUnexpected(Exception e, HttpServletRequest request) {
         ErrorCode errorCode = ErrorCode.INTERNAL_SERVER_ERROR;
 
-        log.error("Unexpected error: ", e);
-        ApiErrorResponse body = ApiErrorResponse.from(errorCode);
+        errorLog(errorCode, request, e);
 
+        ApiErrorResponse body = ApiErrorResponse.from(errorCode);
         return ResponseEntity
                 .status(errorCode.getStatus())
                 .body(body);
+    }
+
+    private void errorLog(ErrorCode errorCode, HttpServletRequest request, Exception e) {
+        log.warn("[{}] {}: {} - {} {}", errorCode.getCode(), errorCode.getStatus(),
+                errorCode.getMessage(), request.getMethod(), request.getRequestURI(), e);
+    }
+
+    private void errorLog(ErrorCode errorCode, HttpServletRequest request) {
+        log.warn("[{}] {}: {} - {} {}", errorCode.getCode(), errorCode.getStatus(),
+                errorCode.getMessage(), request.getMethod(), request.getRequestURI());
     }
 }
