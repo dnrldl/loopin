@@ -26,6 +26,8 @@ public enum ErrorCode {
 
     // post_like
     POST_LIKE_NOT_FOUND("PL001", "현재 유저의 해당 게시글 좋아요 기록을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    POST_ALREADY_LIKED("PL002", "현재 유저가 해당 게시글을 이미 좋아요 했습니다.", HttpStatus.BAD_REQUEST),
+    POST_NOT_LIKED("PL003", "현재 유저가 해당 게시글을 좋아요 하지 않았습니다.", HttpStatus.BAD_REQUEST),
 
     // auth
     INVALID_LOGIN("A001", "자격 증명에 실패하였습니다.", HttpStatus.UNAUTHORIZED),
