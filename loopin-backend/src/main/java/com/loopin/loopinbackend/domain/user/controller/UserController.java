@@ -1,11 +1,9 @@
 package com.loopin.loopinbackend.domain.user.controller;
 
-import com.loopin.loopinbackend.domain.post.dto.response.CommentResponse;
-import com.loopin.loopinbackend.domain.post.dto.response.PostInfoResponse;
-import com.loopin.loopinbackend.domain.post.service.query.PostQueryService;
 import com.loopin.loopinbackend.domain.user.dto.request.UserDeleteRequest;
 import com.loopin.loopinbackend.domain.user.dto.request.UserPasswordUpdateRequest;
 import com.loopin.loopinbackend.domain.user.dto.request.UserProfileUpdateRequest;
+import com.loopin.loopinbackend.domain.user.dto.request.UserRegisterRequest;
 import com.loopin.loopinbackend.domain.user.dto.response.UserInfoResponse;
 import com.loopin.loopinbackend.domain.user.service.UserService;
 import com.loopin.loopinbackend.global.response.ApiErrorResponse;
@@ -22,8 +20,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @Tag(name = "User", description = "유저 API")
 @RestController
 @RequiredArgsConstructor
@@ -31,33 +27,23 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-    private final PostQueryService postQueryService;
 
     // public
-    @Operation(summary = "게시글 단건 조회",
-            description = "게시글 ID를 지용해서 게시글 조회합니다.")
+    @Operation(summary = "회원가입",
+            description = "사용자가 이메일, 비밀번호 등 정보를 입력하여 회원가입합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "조회 성공"),
-            @ApiResponse(responseCode = "404", description = "조회 실패", content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
+            @ApiResponse(responseCode = "201", description = "회원가입 성공"),
+            @ApiResponse(responseCode = "400", description = "입력값 검증 실패", content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
+            @ApiResponse(responseCode = "409", description = "중복된 입력값", content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
     })
-    @GetMapping("/{postId}")
-    public ResponseEntity<ApiSuccessResponse<PostInfoResponse>> getPostInfo(@PathVariable Long postId) {
-        PostInfoResponse postInfo = postQueryService.getPostInfo(postId);
-
-        return ResponseEntity.ok(ApiSuccessResponse.success(postInfo));
-    }
-
-    @Operation(summary = "게시글 댓글 트리 조회",
-            description = "게시글 ID를 지용해서 게시글 댓글트리를 조회합니다.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "조회 성공"),
-            @ApiResponse(responseCode = "404", description = "조회 실패", content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
-    })
-    @GetMapping("/{postId}/comments")
-    public ResponseEntity<ApiSuccessResponse<List<CommentResponse>>> getFlatComments(@PathVariable Long postId) {
-        List<CommentResponse> responses = postQueryService.getCommentTree(postId);
-
-        return ResponseEntity.ok(ApiSuccessResponse.success(responses));
+    @PostMapping("/register")
+    public ResponseEntity<ApiSuccessResponse<String>> register(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "회원가입 요청 DTO", required = true)
+            @Valid @RequestBody UserRegisterRequest request
+    ) {
+        String response = userService.register(request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiSuccessResponse.success(response));
     }
 
     // private
