@@ -2,10 +2,18 @@ package com.loopin.loopinbackend.domain.post.repository;
 
 import com.loopin.loopinbackend.domain.post.dto.FlatCommentDto;
 import com.loopin.loopinbackend.domain.post.dto.response.PostInfoResponse;
+import com.loopin.loopinbackend.domain.post.entity.QPost;
 import com.loopin.loopinbackend.domain.post.exception.PostNotFoundException;
+import com.loopin.loopinbackend.domain.postlike.entity.QPostLike;
+import com.loopin.loopinbackend.domain.user.entity.QUser;
+import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
@@ -19,30 +27,35 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
     @PersistenceContext
     private final EntityManager em;
 
-    @Override
-    public PostInfoResponse findPostById(Long postId) {
-        String sql = """
-                            SELECT new com.loopin.loopinbackend.domain.post.dto.response.PostInfoResponse(
-                                p.id,
-                                p.content,
-                                u.nickname,
-                                p.depth,
-                                p.commentCount,
-                                p.likeCount,
-                                p.shareCount,
-                                false,
-                                p.createdAt,
-                                p.updatedAt
-                            )
-                            FROM Post p
-                            JOIN User u ON p.authorId = u.id
-                            WHERE p.id = :postId
-                        """;
+    private final JPAQueryFactory queryFactory;
+    private final RedisTemplate<String, Object> redisTemplate;
 
-        return em.createQuery(sql, PostInfoResponse.class)
-                .setParameter("postId", postId)
-                .getResultList().stream().findFirst()
-                .orElseThrow(PostNotFoundException::new);
+    @Override
+    public PostInfoResponse findPostById(Long postId, Long userId) {
+        QPost post = QPost.post;
+        QUser user = QUser.user;
+
+        PostInfoResponse response = queryFactory
+                .select(Projections.constructor(PostInfoResponse.class,
+                        post.id,
+                        post.content,
+                        user.nickname,
+                        post.depth,
+                        post.commentCount,
+                        post.likeCount,
+                        post.shareCount,
+                        Expressions.constant(false), // isLiked: Redis에서 따로 설정
+                        post.createdAt,
+                        post.updatedAt
+                ))
+                .from(post)
+                .join(user).on(post.authorId.eq(user.id))
+                .where(post.id.eq(postId))
+                .fetchOne();
+
+        if (response == null) throw new PostNotFoundException();
+
+        return response;
     }
 
     @Override
@@ -86,57 +99,49 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
 
     @Override
     public List<PostInfoResponse> findPosts(Long lastId, int size, Long userId) {
-        String sql = """
-        SELECT
-            p.id,
-            p.content,
-            u.nickname AS author_nickname,
-            0 AS depth,
-            (SELECT COUNT(*) FROM posts c WHERE c.parent_id = p.id) AS comment_count,
-            (SELECT COUNT(*) FROM post_likes pl WHERE pl.post_id = p.id) AS like_count,
-            0 AS share_count,
-            CASE
-                WHEN CAST(:userId AS BIGINT) IS NULL THEN FALSE
-                ELSE EXISTS (
-                    SELECT 1 FROM post_likes pl WHERE pl.post_id = p.id AND pl.user_id = CAST(:userId AS BIGINT)
+        QPost post = QPost.post;
+        QUser user = QUser.user;
+        QPost child = new QPost("child");         // 댓글 수 구하기용 alias
+        QPostLike like = QPostLike.postLike;
+
+        // 1. 게시글 + 메타 정보 조회 (QueryDSL)
+        List<PostInfoResponse> posts = queryFactory
+                .select(Projections.constructor(PostInfoResponse.class,
+                        post.id,
+                        post.content,
+                        user.nickname,
+                        Expressions.constant(0), // depth
+                        JPAExpressions.select(child.count())
+                                .from(child)
+                                .where(child.parentId.eq(post.id)),
+                        JPAExpressions.select(like.count())
+                                .from(like)
+                                .where(like.postId.eq(post.id)),
+                        Expressions.constant(0), // shareCount (추후 구현 시 교체)
+                        Expressions.constant(false), // isLiked, Redis에서 별도로 설정
+                        post.createdAt,
+                        post.updatedAt
+                ))
+                .from(post)
+                .join(user).on(post.authorId.eq(user.id))
+                .where(
+                        post.parentId.isNull(),
+                        lastId != null ? post.id.lt(lastId) : null
                 )
-            END AS isLiked,
-            p.created_at,
-            p.updated_at
-        FROM posts p
-        JOIN users u ON p.author_id = u.id
-        WHERE (CAST(:lastId AS BIGINT) IS NULL OR p.id < CAST(:lastId AS BIGINT))
-        AND p.parent_id IS NULL
-        ORDER BY p.id DESC
-        LIMIT CAST(:size AS BIGINT)
-        """;
+                .orderBy(post.id.desc())
+                .limit(size)
+                .fetch();
 
-        List<Object[]> resultList = em.createNativeQuery(sql)
-                .setParameter("lastId", lastId)
-                .setParameter("size", size)
-                .setParameter("userId", userId)
-                .getResultList();
+        if (userId != null) {
+            // 2. Redis를 이용해 isLiked 필드 설정
+            for (PostInfoResponse response : posts) {
+                String redisKey = "post:" + response.getId() + ":likes";
+                boolean isLiked = Boolean.TRUE.equals(redisTemplate.opsForSet().isMember(redisKey, userId));
+                response.setIsLiked(isLiked);
+            }
+        }
 
-        return resultList.stream()
-                .map(row -> {
-                    Long id = ((Number) row[0]).longValue();
-                    String content = (String) row[1];
-                    String nickname = (String) row[2];
-                    int depth = ((Number) row[3]).intValue();
-                    int commentCount = ((Number) row[4]).intValue();
-                    int likeCount = ((Number) row[5]).intValue();
-                    int shareCount = ((Number) row[6]).intValue();
-                    boolean isLikedByMe = row[7] != null && ((Boolean) row[7]);
-                    LocalDateTime createdAt = row[8] != null ? ((Timestamp) row[8]).toLocalDateTime() : null;
-                    LocalDateTime updatedAt = row[9] != null ? ((Timestamp) row[9]).toLocalDateTime() : null;
 
-                    return new PostInfoResponse(
-                            id, content, nickname, depth,
-                            commentCount, likeCount, shareCount,
-                            isLikedByMe, createdAt, updatedAt
-                    );
-                })
-                .toList();
-
+        return posts;
     }
 }

@@ -6,7 +6,7 @@ import com.loopin.loopinbackend.domain.post.dto.response.PostInfoResponse;
 import java.util.List;
 
 public interface PostQueryRepository {
-    PostInfoResponse findPostById(Long postId);
+    PostInfoResponse findPostById(Long postId, Long userId);
 
     List<FlatCommentDto> findCommentTreeByPostId(Long postId);
 

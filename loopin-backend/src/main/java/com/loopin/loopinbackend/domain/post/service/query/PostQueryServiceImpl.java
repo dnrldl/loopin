@@ -19,8 +19,8 @@ public class PostQueryServiceImpl implements PostQueryService {
 
     @Override
     @Transactional(readOnly = true)
-    public PostInfoResponse getPostInfo(Long postId) {
-        return postQueryRepository.findPostById(postId);
+    public PostInfoResponse getPostInfo(Long postId, Long userId) {
+        return postQueryRepository.findPostById(postId, userId);
     }
 
     @Override

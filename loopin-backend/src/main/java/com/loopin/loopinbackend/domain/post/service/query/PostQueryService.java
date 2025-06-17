@@ -6,7 +6,7 @@ import com.loopin.loopinbackend.domain.post.dto.response.PostInfoResponse;
 import java.util.List;
 
 public interface PostQueryService {
-    PostInfoResponse getPostInfo(Long postId);
+    PostInfoResponse getPostInfo(Long postId, Long userId);
 
     List<CommentResponse> getCommentTree(Long postId);
 
