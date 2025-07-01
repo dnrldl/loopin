@@ -1,6 +1,6 @@
 package com.loopin.loopinbackend.domain.postlike.service.command;
 
-import com.loopin.loopinbackend.domain.post.repository.PostRepository;
+import com.loopin.loopinbackend.domain.post.repository.PostJpaRepository;
 import com.loopin.loopinbackend.domain.postlike.entity.PostLike;
 import com.loopin.loopinbackend.domain.postlike.exception.AlreadyLikedException;
 import com.loopin.loopinbackend.domain.postlike.exception.PostLikeNotFoundException;
@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PostLikeServiceImpl implements PostLikeService {
 
     private final PostLikeRepository postLikeRepository;
-    private final PostRepository postRepository;
+    private final PostJpaRepository postJpaRepository;
     private final RedisTemplate<String, Object> redisTemplate;
 
     @Override
@@ -27,7 +27,7 @@ public class PostLikeServiceImpl implements PostLikeService {
         String key = "post:" + postId + ":likes";
 
         postLikeRepository.save(new PostLike(postId, userId));
-        postRepository.incrementLikeCount(postId);
+        postJpaRepository.incrementLikeCount(postId);
 
         try {
             redisTemplate.opsForSet().add(key, userId);
@@ -43,7 +43,7 @@ public class PostLikeServiceImpl implements PostLikeService {
         String key = "post:" + postId + ":likes";
 
         postLikeRepository.deleteByPostIdAndUserId(postId, userId);
-        postRepository.decrementLikeCount(postId);
+        postJpaRepository.decrementLikeCount(postId);
 
         try {
             redisTemplate.opsForSet().remove(key, userId);

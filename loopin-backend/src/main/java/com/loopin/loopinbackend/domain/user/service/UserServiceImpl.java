@@ -9,7 +9,7 @@ import com.loopin.loopinbackend.domain.user.enums.Provider;
 import com.loopin.loopinbackend.domain.user.enums.Role;
 import com.loopin.loopinbackend.domain.user.enums.Status;
 import com.loopin.loopinbackend.domain.user.exception.InvalidPasswordException;
-import com.loopin.loopinbackend.domain.user.repository.UserRepository;
+import com.loopin.loopinbackend.domain.user.repository.UserJpaRepository;
 import com.loopin.loopinbackend.domain.user.validator.UserPasswordUpdateValidator;
 import com.loopin.loopinbackend.domain.user.validator.UserRegisterValidator;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class UserServiceImpl implements UserService{
 
-    private final UserRepository userRepository;
+    private final UserJpaRepository userJpaRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserRegisterValidator userRegisterValidator;
     private final UserPasswordUpdateValidator userPasswordUpdateValidator;
@@ -46,7 +46,7 @@ public class UserServiceImpl implements UserService{
                 .emailVerified(false)
                 .build();
 
-        User savedUser = userRepository.save(user);
+        User savedUser = userJpaRepository.save(user);
         return savedUser.getEmail();
     }
 
@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService{
         userPasswordUpdateValidator.validate(passwordEncoder, currentUser, oldPassword, newPassword);
 
         currentUser.setPassword(passwordEncoder.encode(newPassword));
-        userRepository.save(currentUser);
+        userJpaRepository.save(currentUser);
     }
 
     @Override
@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService{
         currentUser.setProfileImageUrl(request.getProfileImageUrl());
         currentUser.setBio(request.getBio());
 
-        userRepository.save(currentUser);
+        userJpaRepository.save(currentUser);
     }
 
     @Override
@@ -75,7 +75,7 @@ public class UserServiceImpl implements UserService{
         User currentUser = SecurityUtils.getCurrentUser();
         if (!passwordEncoder.matches(password, currentUser.getPassword())) throw new InvalidPasswordException();
 
-        userRepository.delete(currentUser);
+        userJpaRepository.delete(currentUser);
     }
 
 

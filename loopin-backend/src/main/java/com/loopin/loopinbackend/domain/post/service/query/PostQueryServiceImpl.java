@@ -3,7 +3,9 @@ package com.loopin.loopinbackend.domain.post.service.query;
 import com.loopin.loopinbackend.domain.post.dto.FlatCommentDto;
 import com.loopin.loopinbackend.domain.post.dto.response.CommentResponse;
 import com.loopin.loopinbackend.domain.post.dto.response.PostInfoResponse;
-import com.loopin.loopinbackend.domain.post.repository.PostQueryRepository;
+import com.loopin.loopinbackend.domain.post.qeury.PostSearchCond;
+import com.loopin.loopinbackend.domain.post.repository.query.PostQueryRepository;
+import com.loopin.loopinbackend.global.response.PageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +22,7 @@ public class PostQueryServiceImpl implements PostQueryService {
     @Override
     @Transactional(readOnly = true)
     public PostInfoResponse getPostInfo(Long postId, Long userId) {
-        return postQueryRepository.findPostById(postId, userId);
+        return postQueryRepository.findPostById(postId);
     }
 
     @Override
@@ -31,8 +33,13 @@ public class PostQueryServiceImpl implements PostQueryService {
     }
 
     @Override
-    public List<PostInfoResponse> getPosts(Long lastId, int size, Long userId) {
-        return postQueryRepository.findPosts(lastId, size, userId);
+    public PageResponse<PostInfoResponse> getPosts(PostSearchCond condition, Long userId) {
+        int offset = condition.getPage() * condition.getSize();
+
+        List<PostInfoResponse> content = postQueryRepository.findPosts(offset, condition);
+        Long count = postQueryRepository.countPosts();
+
+        return PageResponse.of(content, condition.getPage(), condition.getSize(), count, condition.getSortBy(), condition.getDirection());
     }
 
     private List<CommentResponse> buildCommentTree(List<FlatCommentDto> flatList, Long postId) {
@@ -43,7 +50,7 @@ public class PostQueryServiceImpl implements PostQueryService {
             CommentResponse node = CommentResponse.from(dto);
             idToNode.put(node.getId(), node);
 
-            if (Objects.equals(node.getParentId(), postId)) { // postId를 루트 parentId로 간주
+            if (Objects.equals(node.getParentId(), postId)) {
                 roots.add(node);
             } else {
                 CommentResponse parent = idToNode.get(node.getParentId());

@@ -86,7 +86,7 @@ public class UserInfoResponse {
                 .bio(user.getBio())
                 .role(user.getRole())
                 .status(user.getStatus())
-                .emailVerified(user.isEmailVerified())
+                .emailVerified(user.getEmailVerified())
                 .provider(user.getProvider())
                 .providerId(user.getProviderId())
                 .lastLoginAt(user.getLastLoginAt())

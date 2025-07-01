@@ -4,22 +4,20 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import java.time.LocalDateTime;
 
 @MappedSuperclass
 @Getter
-@EntityListeners(AuditingEntityListener.class)
-public abstract class BaseEntity {
+//@EntityListeners(AuditingEntityListener.class)
+public class BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    protected Long id;
 
     @CreatedDate
     @Column(updatable = false)
-    protected LocalDateTime createdAt;
+    private LocalDateTime createdAt;  // 엔티티 처음 생성시
 
     @LastModifiedDate
-    protected LocalDateTime updatedAt;
+    private LocalDateTime updatedAt;  // 엔티티 처음 생성 and 변경시
 }

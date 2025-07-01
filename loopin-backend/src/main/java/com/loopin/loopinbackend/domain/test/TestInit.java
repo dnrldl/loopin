@@ -11,6 +11,6 @@ public class TestInit implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        testDataHelper.createTestPostWithNewUser("test", "test content");
+//        testDataHelper.createTestPostWithNewUser("test", "test content");
     }
 }

@@ -1,23 +1,25 @@
 package com.loopin.loopinbackend.domain.user.entity;
 
-import com.loopin.loopinbackend.domain.user.enums.Role;
-import com.loopin.loopinbackend.domain.user.enums.Status;
-import com.loopin.loopinbackend.global.entity.BaseEntity;
 import com.loopin.loopinbackend.domain.user.enums.Gender;
 import com.loopin.loopinbackend.domain.user.enums.Provider;
+import com.loopin.loopinbackend.domain.user.enums.Role;
+import com.loopin.loopinbackend.domain.user.enums.Status;
+import com.loopin.loopinbackend.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "users")
+@Table(name = "users") // postgresql 에서는 "user"가 예약어라서 "users" 로 대체
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
-public class User extends BaseEntity {
+public class User extends BaseTimeEntity {
 
     @Column(nullable = false, unique = true)
     private String email;
@@ -42,9 +44,8 @@ public class User extends BaseEntity {
 
     private String profileImageUrl;
 
-    // 자기소개
     @Column(length = 300)
-    private String bio;
+    private String bio; // 자기소개
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -55,7 +56,7 @@ public class User extends BaseEntity {
     private Status status;
 
     @Column(nullable = false)
-    private boolean emailVerified = false;
+    private Boolean emailVerified = false;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

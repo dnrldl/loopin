@@ -1,8 +1,8 @@
 package com.loopin.loopinbackend.domain.post.dto.response;
 
 
+import com.querydsl.core.annotations.QueryProjection;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
-//@AllArgsConstructor
 @Setter
 @Schema(name = "PostInfoResponse", description = "게시글 정보 응답 DTO")
 public class PostInfoResponse {
@@ -32,7 +31,7 @@ public class PostInfoResponse {
     @Schema(description = "좋아요 수", example = "99")
     private Long likeCount;
     @Schema(description = "공유 수", example = "99")
-    private Integer shareCount;
+    private Long shareCount;
 
     @Schema(description = "로그인한 유저의 좋아요 여부", example = "true")
     private Boolean isLiked;
@@ -41,9 +40,11 @@ public class PostInfoResponse {
     protected LocalDateTime createdAt;
     @Schema(description = "게시글 변경일", example = "2025-01-01T09:00:00", type = "string", format = "date-time")
     protected LocalDateTime updatedAt;
+
+    @QueryProjection
     public PostInfoResponse(Long id, String content, String authorNickname,
                             Integer depth, Long commentCount, Long likeCount,
-                            Integer shareCount, Boolean isLiked,
+                            Long shareCount, Boolean isLiked,
                             LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.content = content;
@@ -56,6 +57,4 @@ public class PostInfoResponse {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
-
-
 }

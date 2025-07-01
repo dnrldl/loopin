@@ -6,10 +6,12 @@ import com.loopin.loopinbackend.domain.post.dto.request.PostCreateRequest;
 import com.loopin.loopinbackend.domain.post.dto.request.PostUpdateRequest;
 import com.loopin.loopinbackend.domain.post.dto.response.CommentResponse;
 import com.loopin.loopinbackend.domain.post.dto.response.PostInfoResponse;
+import com.loopin.loopinbackend.domain.post.qeury.PostSearchCond;
 import com.loopin.loopinbackend.domain.post.service.command.PostService;
 import com.loopin.loopinbackend.domain.post.service.query.PostQueryService;
 import com.loopin.loopinbackend.global.response.ApiErrorResponse;
 import com.loopin.loopinbackend.global.response.ApiSuccessResponse;
+import com.loopin.loopinbackend.global.response.PageResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -58,14 +60,13 @@ public class PostController {
             @ApiResponse(responseCode = "404", description = "조회 실패", content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
     })
     @GetMapping
-    public ResponseEntity<ApiSuccessResponse<List<PostInfoResponse>>> getPosts(
-            @RequestParam(required = false) Long lastId,
-            @RequestParam(defaultValue = "10") int size,
+    public ResponseEntity<ApiSuccessResponse<PageResponse<PostInfoResponse>>> getPosts(
+            PostSearchCond condition,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         Long userId = null;
         if (userDetails != null) userId = userDetails.getUserId();
-        List<PostInfoResponse> responses = postQueryService.getPosts(lastId, size, userId);
+        PageResponse<PostInfoResponse> responses = postQueryService.getPosts(condition, userId);
 
         return ResponseEntity.ok(ApiSuccessResponse.success(responses));
     }

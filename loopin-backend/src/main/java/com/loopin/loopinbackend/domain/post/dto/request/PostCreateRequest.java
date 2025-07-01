@@ -14,7 +14,4 @@ import lombok.NoArgsConstructor;
 public class PostCreateRequest {
     @Schema(description = "내용", example = "게시글 내용")
     private String content;
-
-    @Schema(description = "부모 게시글", example = "1")
-    private Long parentId;
 }
