@@ -1,6 +1,6 @@
 package com.loopin.loopinbackend.domain.post.service.query;
 
-import com.loopin.loopinbackend.domain.post.dto.response.CommentResponse;
+import com.loopin.loopinbackend.domain.comment.dto.response.CommentResponse;
 import com.loopin.loopinbackend.domain.post.dto.response.PostInfoResponse;
 import com.loopin.loopinbackend.domain.post.qeury.PostSearchCond;
 import com.loopin.loopinbackend.global.response.PageResponse;

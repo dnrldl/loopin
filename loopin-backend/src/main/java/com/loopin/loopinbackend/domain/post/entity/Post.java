@@ -1,9 +1,7 @@
 package com.loopin.loopinbackend.domain.post.entity;
 
 import com.loopin.loopinbackend.global.entity.BaseAuditingEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
@@ -14,6 +12,10 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class Post extends BaseAuditingEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(nullable = false)
     private String content;

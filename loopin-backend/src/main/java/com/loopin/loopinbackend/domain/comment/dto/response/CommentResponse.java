@@ -1,8 +1,8 @@
-package com.loopin.loopinbackend.domain.post.dto.response;
+package com.loopin.loopinbackend.domain.comment.dto.response;
 
 import com.loopin.loopinbackend.domain.post.dto.FlatCommentDto;
+import com.querydsl.core.annotations.QueryProjection;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -12,7 +12,6 @@ import java.util.List;
 
 @Getter
 @Builder
-@AllArgsConstructor
 @Schema(name = "CommentResponse", description = "댓글 응답 DTO")
 public class CommentResponse {
     @Schema(description = "댓글 ID", example = "1")
@@ -62,5 +61,16 @@ public class CommentResponse {
                 dto.getUpdateAt(),
                 new ArrayList<>()
         );
+    }
+
+    @QueryProjection
+    public CommentResponse(Long id, Long parentId, String content, String authorNickname, Integer depth, LocalDateTime createdAt, LocalDateTime updatedAt, List<CommentResponse> children) {
+        this.id = id;
+        this.parentId = parentId;
+        this.content = content;
+        this.authorNickname = authorNickname;
+        this.depth = depth;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 }

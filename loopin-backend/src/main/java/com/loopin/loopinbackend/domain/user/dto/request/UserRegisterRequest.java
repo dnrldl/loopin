@@ -4,10 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.loopin.loopinbackend.domain.user.enums.Gender;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -18,6 +15,7 @@ import static com.loopin.loopinbackend.global.constant.ValidationConstant.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(name = "UserRegisterRequest", description = "유저 회원가입 요청 DTO")
+@ToString
 public class UserRegisterRequest {
 
     @Schema(description = "이메일", example = "loopin@loopin.com")

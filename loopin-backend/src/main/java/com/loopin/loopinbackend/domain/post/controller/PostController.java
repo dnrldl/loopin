@@ -4,7 +4,7 @@ import com.loopin.loopinbackend.domain.auth.model.CustomUserDetails;
 import com.loopin.loopinbackend.domain.auth.security.util.SecurityUtils;
 import com.loopin.loopinbackend.domain.post.dto.request.PostCreateRequest;
 import com.loopin.loopinbackend.domain.post.dto.request.PostUpdateRequest;
-import com.loopin.loopinbackend.domain.post.dto.response.CommentResponse;
+import com.loopin.loopinbackend.domain.comment.dto.response.CommentResponse;
 import com.loopin.loopinbackend.domain.post.dto.response.PostInfoResponse;
 import com.loopin.loopinbackend.domain.post.qeury.PostSearchCond;
 import com.loopin.loopinbackend.domain.post.service.command.PostService;
@@ -71,19 +71,6 @@ public class PostController {
         return ResponseEntity.ok(ApiSuccessResponse.success(responses));
     }
 
-    @Operation(summary = "게시글 댓글 트리 조회",
-            description = "게시글 ID를 지용해서 게시글 댓글트리를 조회합니다.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "조회 성공"),
-            @ApiResponse(responseCode = "404", description = "조회 실패", content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
-    })
-    @GetMapping("/{postId}/comments")
-    public ResponseEntity<ApiSuccessResponse<List<CommentResponse>>> getFlatComments(@PathVariable Long postId) {
-        List<CommentResponse> responses = postQueryService.getCommentTree(postId);
-
-        return ResponseEntity.ok(ApiSuccessResponse.success(responses));
-    }
-
     // private
     @Operation(summary = "게시글 생성",
             description = "로그인한 사용자의 ID, 게시글 내용으로 게시글을 생성합니다.")
@@ -95,6 +82,9 @@ public class PostController {
     @PostMapping
     public ResponseEntity<ApiSuccessResponse<Long>> createPost(@RequestBody PostCreateRequest request) {
         Long currentUserId = SecurityUtils.getCurrentUser().getId();
+
+        System.out.println("currentUserId = " + currentUserId);
+        System.out.println("request = " + request.getContent());
 
         Long postId = postService.createPost(request, currentUserId);
 

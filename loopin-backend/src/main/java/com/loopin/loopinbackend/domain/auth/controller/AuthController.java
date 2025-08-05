@@ -64,6 +64,7 @@ public class AuthController {
     })
     @PostMapping("/reissue")
     public ResponseEntity<ApiSuccessResponse<String>> reissue(@CookieValue("refreshToken") String refreshToken, HttpServletResponse response) {
+        System.out.println("refreshToken = " + refreshToken);
         Map<String, String> tokens = authService.reissue(refreshToken);
 
         ResponseCookie cookie = ResponseCookie.from("refreshToken", tokens.get("refreshToken"))

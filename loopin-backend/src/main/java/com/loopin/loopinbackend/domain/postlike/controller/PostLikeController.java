@@ -47,7 +47,7 @@ public class PostLikeController {
             @ApiResponse(responseCode = "400", description = "입력값 검증 실패", content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
             @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자", content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
     })
-    @DeleteMapping("/{postId}/like")
+    @PostMapping("/{postId}/unlike")
     public ResponseEntity<ApiSuccessResponse<Void>> unlikePost(@PathVariable Long postId) {
         Long userId = SecurityUtils.getCurrentUser().getId();
         postLikeService.unlike(postId, userId);
