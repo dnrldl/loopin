@@ -21,14 +21,14 @@ public class Post extends BaseAuditingEntity {
     private String content;
 
     @Column(nullable = false)
-    private Integer depth = 0;
+    private Integer depth ;
 
     @Column(nullable = false)
-    private Long viewCount = 0L;
+    private Long viewCount;
     @Column(nullable = false)
-    private Long likeCount = 0L;
+    private Long likeCount;
     @Column(nullable = false)
-    private Long shareCount = 0L;
+    private Long shareCount;
     @Column(nullable = false)
-    private Long commentCount = 0L;
+    private Long commentCount;
 }

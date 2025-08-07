@@ -36,6 +36,7 @@ public class CommentQueryRepositoryImpl implements CommentQueryRepository {
                 .from(comment)
                 .join(user).on(comment.createdBy.eq(user.id))
                 .where(comment.parentId.eq(postId))
+                .orderBy(comment.createdAt.desc())
                 .fetch();
     }
 

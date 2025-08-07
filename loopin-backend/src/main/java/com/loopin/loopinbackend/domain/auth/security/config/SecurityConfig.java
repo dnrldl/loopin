@@ -7,6 +7,7 @@ import com.loopin.loopinbackend.domain.auth.jwt.filter.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -38,8 +39,26 @@ public class SecurityConfig {
                 .logout(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(RequestMatcher.PERMIT_PATH).permitAll()
-                        .anyRequest().permitAll()
+                        // Auth 관련은 전부 허용
+                        .requestMatchers("/api/auth/**").permitAll()
+
+                        // Swagger 문서 허용
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+
+                        // 회원가입 허용
+                        .requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()
+
+                        // 유저 조회 허용
+                        .requestMatchers(HttpMethod.GET, "/api/users/**").permitAll()
+
+                        // 게시글 조회 허용
+                        .requestMatchers(HttpMethod.GET, "/api/posts", "/api/posts/*").permitAll()
+
+                        // 댓글 조회 허용
+                        .requestMatchers(HttpMethod.GET, "/api/posts/*/comments").permitAll()
+
+                        // 그 외 API는 인증 필요
+                        .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -48,7 +67,7 @@ public class SecurityConfig {
 
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(authenticationEntryPoint) // 401
-                        .accessDeniedHandler(accessDeniedHandler)
+                        .accessDeniedHandler(accessDeniedHandler) // 403
                 );
 
                 // oAuth2

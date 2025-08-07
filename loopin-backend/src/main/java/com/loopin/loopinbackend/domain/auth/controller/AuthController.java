@@ -1,5 +1,6 @@
 package com.loopin.loopinbackend.domain.auth.controller;
 
+import com.loopin.loopinbackend.domain.auth.dto.LoginResult;
 import com.loopin.loopinbackend.domain.auth.dto.request.UserLoginRequest;
 import com.loopin.loopinbackend.domain.auth.dto.response.UserLoginResponse;
 import com.loopin.loopinbackend.domain.auth.service.AuthServiceImpl;
@@ -42,9 +43,9 @@ public class AuthController {
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "로그인 요청 DTO", required = true)
             @RequestBody UserLoginRequest userLoginRequest,
             HttpServletResponse response) {
-        UserLoginResponse tokens = authService.login(userLoginRequest);
+        LoginResult result = authService.login(userLoginRequest);
 
-        ResponseCookie cookie = ResponseCookie.from("refreshToken", tokens.getRefreshToken())
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", result.getRefreshToken())
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
@@ -53,7 +54,7 @@ public class AuthController {
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
-        return ResponseEntity.ok(ApiSuccessResponse.success(new UserLoginResponse(tokens.getAccessToken(), null)));
+        return ResponseEntity.ok(ApiSuccessResponse.success(result.getUserLoginResponse()));
     }
 
     @Operation(summary = "엑세스 토큰 재발급",

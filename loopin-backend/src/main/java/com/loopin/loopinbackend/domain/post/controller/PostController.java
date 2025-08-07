@@ -1,5 +1,6 @@
 package com.loopin.loopinbackend.domain.post.controller;
 
+import com.loopin.loopinbackend.domain.auth.jwt.provider.JwtProvider;
 import com.loopin.loopinbackend.domain.auth.model.CustomUserDetails;
 import com.loopin.loopinbackend.domain.auth.security.util.SecurityUtils;
 import com.loopin.loopinbackend.domain.post.dto.request.PostCreateRequest;
@@ -18,6 +19,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +36,7 @@ public class PostController {
 
     private final PostService postService;
     private final PostQueryService postQueryService;
+    private final JwtProvider jwtProvider;
 
     // public
     @Operation(summary = "게시글 단건 조회",

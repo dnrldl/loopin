@@ -9,6 +9,7 @@ import com.loopin.loopinbackend.domain.user.enums.Provider;
 import com.loopin.loopinbackend.domain.user.enums.Role;
 import com.loopin.loopinbackend.domain.user.enums.Status;
 import com.loopin.loopinbackend.domain.user.exception.InvalidPasswordException;
+import com.loopin.loopinbackend.domain.user.exception.UserNotFoundException;
 import com.loopin.loopinbackend.domain.user.repository.UserJpaRepository;
 import com.loopin.loopinbackend.domain.user.validator.UserPasswordUpdateValidator;
 import com.loopin.loopinbackend.domain.user.validator.UserRegisterValidator;
@@ -78,11 +79,16 @@ public class UserServiceImpl implements UserService{
         userJpaRepository.delete(currentUser);
     }
 
-
     @Override
     @Transactional(readOnly = true)
     public UserInfoResponse getMyInfo() {
         User currentUser = SecurityUtils.getCurrentUser();
         return UserInfoResponse.of(currentUser);
+    }
+
+    @Override
+    public UserInfoResponse getUserInfo(Long userId) {
+        User user = userJpaRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        return UserInfoResponse.of(user);
     }
 }

@@ -48,14 +48,29 @@ public class UserController {
     }
 
     // private
-    @Operation(summary = "내 정보 조회",
-            description = "사용자 정보를 조회합니다.")
+    @Operation(summary = "유저 정보 조회",
+            description = "유저 정보를 조회합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공"),
             @ApiResponse(responseCode = "400", description = "입력값 검증 실패", content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
             @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자", content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
     })
-    @GetMapping("/info")
+    @GetMapping("/{userId}")
+    public ResponseEntity<ApiSuccessResponse<UserInfoResponse>> getUserInfo(@PathVariable Long userId) {
+        UserInfoResponse res = userService.getUserInfo(userId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiSuccessResponse.success(res));
+    }
+
+    // private
+    @Operation(summary = "내 정보 조회",
+            description = "내 정보를 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "400", description = "입력값 검증 실패", content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
+            @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자", content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
+    })
+    @GetMapping("/me")
     public ResponseEntity<ApiSuccessResponse<UserInfoResponse>> getMyInfo() {
         UserInfoResponse res = userService.getMyInfo();
         return ResponseEntity.status(HttpStatus.OK)
@@ -94,8 +109,8 @@ public class UserController {
         return ResponseEntity.ok(ApiSuccessResponse.success(null));
     }
 
-    @Operation(summary = "내 프로필 변경",
-            description = "현재 로그인된 사용자의 프로필을 변경합니다.")
+    @Operation(summary = "회원 탈퇴",
+            description = "현재 로그인된 사용자를 회원 탈퇴합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "회원 탈퇴 성공"),
             @ApiResponse(responseCode = "400", description = "입력값 검증 실패", content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),

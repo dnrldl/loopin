@@ -1,5 +1,6 @@
 package com.loopin.loopinbackend.domain.auth.jwt.filter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.loopin.loopinbackend.domain.auth.exception.BlacklistTokenException;
 import com.loopin.loopinbackend.domain.auth.exception.ExpiredCustomJwtException;
 import com.loopin.loopinbackend.domain.auth.exception.InvalidJwtException;
@@ -22,6 +23,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -35,13 +38,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-
-        String uri = request.getRequestURI();
-
-        if (uri.equals("/api/auth/reissue")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+        /**
+         * 1. 만료된 access token 으로 요청
+         * 2. jwt filter 에서 예외 발생
+         * 3. client 에서 401 응답
+         * 4. client 에서 access token 을 제외하고 cookie 로 refresh token 으로 새로운 access token 요청
+         * 5. server 는 reissue 로 access token 반환
+         * 6. client 는 응답된 access token 으로 원래의 요청 다시 요청
+         */
 
         String token = SecurityUtils.resolveToken(request);
 
@@ -59,8 +63,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
-            } catch (ExpiredCustomJwtException e) {
-                log.info("AccessToken 만료됨 (허용): {}", e.getMessage());
             } catch (Exception e) {
                 log.error("JwtAuthenticationFilter 오류", e);
             }
@@ -68,5 +70,4 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
-
 }

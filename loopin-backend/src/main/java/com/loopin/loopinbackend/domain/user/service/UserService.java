@@ -16,4 +16,6 @@ public interface UserService {
     void updateProfile(UserProfileUpdateRequest request);
 
     void deleteUser(String password);
+
+    UserInfoResponse getUserInfo(Long userId);
 }

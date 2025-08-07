@@ -1,6 +1,7 @@
 package com.loopin.loopinbackend.domain.auth.service;
 
 
+import com.loopin.loopinbackend.domain.auth.dto.LoginResult;
 import com.loopin.loopinbackend.domain.auth.dto.request.UserLoginRequest;
 import com.loopin.loopinbackend.domain.auth.dto.response.UserLoginResponse;
 import com.loopin.loopinbackend.domain.auth.exception.BlacklistTokenException;
@@ -9,6 +10,7 @@ import com.loopin.loopinbackend.domain.auth.exception.InvalidLoginException;
 import com.loopin.loopinbackend.domain.auth.jwt.provider.JwtProvider;
 import com.loopin.loopinbackend.domain.auth.model.CustomUserDetails;
 import com.loopin.loopinbackend.domain.auth.security.util.SecurityUtils;
+import com.loopin.loopinbackend.domain.user.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -33,13 +35,15 @@ public class AuthServiceImpl implements AuthService {
     private final JwtProvider jwtProvider;
     private final RedisTemplate<String, Object> redisTemplate;
 
-    public UserLoginResponse login(UserLoginRequest request) {
+    public LoginResult login(UserLoginRequest request) {
         String email = request.getEmail();
         String password = request.getPassword();
 
         try {
+            // login 진행
             Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
-            String userId = ((CustomUserDetails) auth.getPrincipal()).getUserId().toString();
+            CustomUserDetails principal = (CustomUserDetails) auth.getPrincipal();
+            String userId = principal.getUserId().toString();
 
             String accessToken = jwtProvider.generateAccessToken(auth);
             String refreshToken = jwtProvider.generateRefreshToken(auth);
@@ -49,7 +53,9 @@ public class AuthServiceImpl implements AuthService {
 
             redisTemplate.opsForValue().set(redisKey, refreshToken, Duration.ofMillis(ttl));
 
-            return new UserLoginResponse(accessToken, refreshToken);
+            User loggedInUser = principal.user();
+
+            return new LoginResult(refreshToken, UserLoginResponse.of(loggedInUser, accessToken));
         } catch (AuthenticationException ex) {
             System.out.println(ex.getMessage());
             throw new InvalidLoginException();
