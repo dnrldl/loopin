@@ -42,6 +42,9 @@ public class SecurityConfig {
                         // Auth 관련은 전부 허용
                         .requestMatchers("/api/auth/**").permitAll()
 
+                        // 중복 체크 허용
+                        .requestMatchers("/api/users/check/**").permitAll()
+
                         // Swagger 문서 허용
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
 

@@ -43,7 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
          * 2. jwt filter 에서 예외 발생
          * 3. client 에서 401 응답
          * 4. client 에서 access token 을 제외하고 cookie 로 refresh token 으로 새로운 access token 요청
-         * 5. server 는 reissue 로 access token 반환
+         * 5. server 는 refresh 로 access token 반환
          * 6. client 는 응답된 access token 으로 원래의 요청 다시 요청
          */
 

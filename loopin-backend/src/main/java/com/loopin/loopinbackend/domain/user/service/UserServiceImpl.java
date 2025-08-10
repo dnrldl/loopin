@@ -18,6 +18,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Locale;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -90,5 +92,15 @@ public class UserServiceImpl implements UserService{
     public UserInfoResponse getUserInfo(Long userId) {
         User user = userJpaRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         return UserInfoResponse.of(user);
+    }
+
+    @Override
+    public boolean checkEmail(String email) {
+        return !userJpaRepository.existsByEmail(email.trim().toLowerCase(Locale.ROOT));
+    }
+
+    @Override
+    public boolean checkNickname(String nickname) {
+        return !userJpaRepository.existsByNickname(nickname.trim());
     }
 }

@@ -47,6 +47,28 @@ public class UserController {
                 .body(ApiSuccessResponse.success(response));
     }
 
+    @Operation(summary = "이메일 중복 체크",
+            description = "등록된 이메일인지 체크")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "400", description = "조회 실패", content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
+    })
+    @GetMapping("/check/email")
+    public ResponseEntity<ApiSuccessResponse<Boolean>> checkEmail(@RequestParam String email) {
+        return ResponseEntity.ok(ApiSuccessResponse.success(userService.checkEmail(email)));
+    }
+
+    @Operation(summary = "닉네임 중복 체크",
+            description = "등록된 닉네임인지 체크")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "400", description = "조회 실패", content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
+    })
+    @GetMapping("/check/nickname")
+    public ResponseEntity<ApiSuccessResponse<Boolean>> checkNickname(@RequestParam String nickname) {
+        return ResponseEntity.ok(ApiSuccessResponse.success(userService.checkNickname(nickname)));
+    }
+
     // private
     @Operation(summary = "유저 정보 조회",
             description = "유저 정보를 조회합니다.")

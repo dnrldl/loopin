@@ -1,5 +1,6 @@
 package com.loopin.loopinbackend.domain.post.repository.query;
 
+import com.loopin.loopinbackend.domain.comment.entity.QComment;
 import com.loopin.loopinbackend.domain.post.dto.FlatCommentDto;
 import com.loopin.loopinbackend.domain.post.dto.response.PostInfoResponse;
 import com.loopin.loopinbackend.domain.post.dto.response.QPostInfoResponse;
@@ -9,6 +10,7 @@ import com.loopin.loopinbackend.domain.post.qeury.PostSearchCond;
 import com.loopin.loopinbackend.domain.user.entity.QUser;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -33,6 +35,7 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
     public PostInfoResponse findPostById(Long postId) {
         QPost post = QPost.post;
         QUser user = QUser.user;
+        QComment comment = QComment.comment;
 
         PostInfoResponse response = queryFactory
                 .select(new QPostInfoResponse(
@@ -40,10 +43,13 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
                         post.content,
                         user.nickname,
                         post.depth,
-                        post.commentCount,
+                        JPAExpressions
+                                .select(comment.count())
+                                .from(comment)
+                                .where(comment.parentId.eq(post.id)),
                         post.likeCount,
                         post.shareCount,
-                        Expressions.constant(false), // isLiked: Redis에서 따로 설정
+                        Expressions.constant(false), // isLiked: Redis 에서 따로 설정
                         post.createdAt,
                         post.updatedAt
                 ))

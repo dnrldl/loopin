@@ -11,6 +11,7 @@ import com.loopin.loopinbackend.domain.auth.jwt.provider.JwtProvider;
 import com.loopin.loopinbackend.domain.auth.model.CustomUserDetails;
 import com.loopin.loopinbackend.domain.auth.security.util.SecurityUtils;
 import com.loopin.loopinbackend.domain.user.entity.User;
+import com.loopin.loopinbackend.domain.user.repository.UserJpaRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -31,6 +32,7 @@ import java.util.Map;
 public class AuthServiceImpl implements AuthService {
 
     private final UserDetailsService userDetailsService;
+    private final UserJpaRepository userJpaRepository;
     private final AuthenticationManager authenticationManager;
     private final JwtProvider jwtProvider;
     private final RedisTemplate<String, Object> redisTemplate;
@@ -64,19 +66,22 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void logout(HttpServletRequest request) {
-        String token = SecurityUtils.resolveToken(request);
-        String userId = jwtProvider.extractUserId(token).toString();
-        long ttl = jwtProvider.extractExpiration(token) - System.currentTimeMillis();
+        String accessToken = SecurityUtils.resolveToken(request);
+        String userId = jwtProvider.extractUserId(accessToken).toString();
+        long ttl = jwtProvider.extractExpiration(accessToken) - System.currentTimeMillis();
 
-        // 엑세스 토큰 블랙리스트 등록
-        String blackKey = "blacklist:" + token;
-        redisTemplate.opsForValue().set(blackKey, "logout", Duration.ofMillis(ttl));
+        // 토큰이 유효하면 엑세스 토큰 블랙리스트 등록
+        if (ttl > 0) {
+            String blackKey = "blacklist:" + accessToken;
+            redisTemplate.opsForValue().set(blackKey, "logout", Duration.ofMillis(ttl));
+        }
+
         // 리프레시 토큰 레디스에서 삭제
         redisTemplate.delete("refresh:" + userId);
     }
 
     @Override
-    public Map<String, String> reissue(String refreshToken) {
+    public Map<String, String> refresh(String refreshToken) {
         if (redisTemplate.hasKey("BL:RT:" + refreshToken)) throw new BlacklistTokenException();
         if (!jwtProvider.validateToken(refreshToken)) throw new InvalidJwtException();
 
