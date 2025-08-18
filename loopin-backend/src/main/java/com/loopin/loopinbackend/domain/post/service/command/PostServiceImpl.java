@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -19,14 +21,15 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Long createPost(PostCreateRequest request, Long userId) {
-        return postJpaRepository.save(Post.builder()
+        Post newPost = Post.builder()
                 .content(request.getContent())
                 .depth(0)
                 .likeCount(0L)
                 .shareCount(0L)
                 .commentCount(0L)
                 .viewCount(0L)
-                .build()).getId();
+                .build();
+        return postJpaRepository.save(newPost).getId();
     }
 
     @Override
@@ -46,5 +49,24 @@ public class PostServiceImpl implements PostService {
         if (!post.getCreatedBy().equals(userId)) throw new PostNotOwnerException();
 
         postJpaRepository.delete(post);
+    }
+
+    @Override
+    public void createPosts() {
+        ArrayList<Post> posts = new ArrayList<>();
+
+        for (int i = 0; i < 100; i++) {
+            posts.add(
+            Post.builder()
+                    .content("Post " + i)
+                    .depth(0)
+                    .likeCount(0L)
+                    .shareCount(0L)
+                    .commentCount(0L)
+                    .viewCount(0L)
+                    .build());
+        }
+
+        postJpaRepository.saveAll(posts);
     }
 }

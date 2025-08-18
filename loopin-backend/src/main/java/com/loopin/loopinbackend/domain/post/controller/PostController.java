@@ -5,8 +5,7 @@ import com.loopin.loopinbackend.domain.auth.model.CustomUserDetails;
 import com.loopin.loopinbackend.domain.auth.security.util.SecurityUtils;
 import com.loopin.loopinbackend.domain.post.dto.request.PostCreateRequest;
 import com.loopin.loopinbackend.domain.post.dto.request.PostUpdateRequest;
-import com.loopin.loopinbackend.domain.comment.dto.response.CommentResponse;
-import com.loopin.loopinbackend.domain.post.dto.response.PostInfoResponse;
+import com.loopin.loopinbackend.domain.post.dto.response.PostDetailResponse;
 import com.loopin.loopinbackend.domain.post.qeury.PostSearchCond;
 import com.loopin.loopinbackend.domain.post.service.command.PostService;
 import com.loopin.loopinbackend.domain.post.service.query.PostQueryService;
@@ -19,14 +18,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Tag(name = "Post", description = "게시글 API")
 @RestController
@@ -46,12 +42,12 @@ public class PostController {
             @ApiResponse(responseCode = "404", description = "조회 실패", content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
     })
     @GetMapping("/{postId}")
-    public ResponseEntity<ApiSuccessResponse<PostInfoResponse>> getPost(@PathVariable Long postId,
-                                                                        @AuthenticationPrincipal CustomUserDetails userDetails
+    public ResponseEntity<ApiSuccessResponse<PostDetailResponse>> getPost(@PathVariable Long postId,
+                                                                          @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         Long userId = null;
         if (userDetails != null) userId = userDetails.getUserId();
-        PostInfoResponse postInfo = postQueryService.getPostInfo(postId, userId);
+        PostDetailResponse postInfo = postQueryService.getPostInfo(postId, userId);
 
         return ResponseEntity.ok(ApiSuccessResponse.success(postInfo));
     }
@@ -63,13 +59,13 @@ public class PostController {
             @ApiResponse(responseCode = "404", description = "조회 실패", content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
     })
     @GetMapping
-    public ResponseEntity<ApiSuccessResponse<PageResponse<PostInfoResponse>>> getPosts(
+    public ResponseEntity<ApiSuccessResponse<PageResponse<PostDetailResponse>>> getPosts(
             PostSearchCond condition,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         Long userId = null;
         if (userDetails != null) userId = userDetails.getUserId();
-        PageResponse<PostInfoResponse> responses = postQueryService.getPosts(condition, userId);
+        PageResponse<PostDetailResponse> responses = postQueryService.getPosts(condition, userId);
 
         return ResponseEntity.ok(ApiSuccessResponse.success(responses));
     }
@@ -85,10 +81,6 @@ public class PostController {
     @PostMapping
     public ResponseEntity<ApiSuccessResponse<Long>> createPost(@RequestBody PostCreateRequest request) {
         Long currentUserId = SecurityUtils.getCurrentUser().getId();
-
-        System.out.println("currentUserId = " + currentUserId);
-        System.out.println("request = " + request.getContent());
-
         Long postId = postService.createPost(request, currentUserId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiSuccessResponse.success(postId));
@@ -124,5 +116,11 @@ public class PostController {
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
                 .body(ApiSuccessResponse.success(null));
+    }
+
+    @PostMapping("/make")
+    public ResponseEntity<ApiSuccessResponse<Void>> makePosts() {
+        postService.createPosts();
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiSuccessResponse.success(null));
     }
 }

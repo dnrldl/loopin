@@ -22,8 +22,8 @@ public class PostLikeServiceImpl implements PostLikeService {
     private final RedisTemplate<String, Object> redisTemplate;
 
     @Override
-    public void like(Long postId, Long userId) {
-        if (postLikeRepository.existsByPostIdAndUserId(postId, userId)) throw new AlreadyLikedException();
+    public boolean like(Long postId, Long userId) {
+//        if (postLikeRepository.existsByPostIdAndUserId(postId, userId)) throw new AlreadyLikedException();
         String key = "post:" + postId + ":likes";
 
         postLikeRepository.save(new PostLike(postId, userId));
@@ -34,12 +34,12 @@ public class PostLikeServiceImpl implements PostLikeService {
         } catch (Exception e) {
             log.warn("Redis 업데이트 실패: postId={}, userId={}", postId, userId);
         }
-
+        return false;
     }
 
     @Override
-    public void unlike(Long postId, Long userId) {
-        if (!postLikeRepository.existsByPostIdAndUserId(postId, userId)) throw new PostLikeNotFoundException();
+    public boolean unlike(Long postId, Long userId) {
+//        if (!postLikeRepository.existsByPostIdAndUserId(postId, userId)) throw new PostLikeNotFoundException();
         String key = "post:" + postId + ":likes";
 
         postLikeRepository.deleteByPostIdAndUserId(postId, userId);
@@ -50,5 +50,6 @@ public class PostLikeServiceImpl implements PostLikeService {
         } catch (Exception e) {
             log.warn("Redis 업데이트 실패: postId={}, userId={}", postId, userId);
         }
+        return false;
     }
 }

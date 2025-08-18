@@ -8,17 +8,24 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Builder
 @Setter
 @Schema(name = "PostInfoResponse", description = "게시글 정보 응답 DTO")
-public class PostInfoResponse {
+public class PostDetailResponse {
     @Schema(description = "게시글 ID", example = "1")
     private Long id;
 
     @Schema(description = "게시글 내용", example = "게시글 내용")
     private String content;
+
+    @Schema(description = "썸네일 URL")
+    private String thumbnailUrl;
+
+    @Schema(description = "이미지 URL 리스트")
+    private List<String> imageUrls;
 
     @Schema(description = "작성자 닉네임", example = "loopin")
     private String authorNickname;
@@ -42,12 +49,14 @@ public class PostInfoResponse {
     protected LocalDateTime updatedAt;
 
     @QueryProjection
-    public PostInfoResponse(Long id, String content, String authorNickname,
-                            Integer depth, Long commentCount, Long likeCount,
-                            Long shareCount, Boolean isLiked,
-                            LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public PostDetailResponse(Long id, String content, String thumbnailUrl, List<String> imageUrls, String authorNickname,
+                              Integer depth, Long commentCount, Long likeCount,
+                              Long shareCount, Boolean isLiked,
+                              LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.content = content;
+        this.thumbnailUrl = thumbnailUrl;
+        this.imageUrls = imageUrls;
         this.authorNickname = authorNickname;
         this.depth = depth;
         this.commentCount = commentCount;

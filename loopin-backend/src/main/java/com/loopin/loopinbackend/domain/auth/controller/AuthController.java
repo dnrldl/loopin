@@ -13,9 +13,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -65,6 +67,8 @@ public class AuthController {
     })
     @PostMapping("/refresh")
     public ResponseEntity<ApiSuccessResponse<String>> refresh(@CookieValue("refreshToken") String refreshToken, HttpServletResponse response) {
+        System.out.println("refreshToken ---------------------- " + refreshToken);
+
         Map<String, String> tokens = authService.refresh(refreshToken);
 
         ResponseCookie cookie = ResponseCookie.from("refreshToken", tokens.get("refreshToken"))
@@ -77,5 +81,29 @@ public class AuthController {
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
         return ResponseEntity.ok(ApiSuccessResponse.success(tokens.get("accessToken")));
+    }
+
+    // private
+    @Operation(summary = "로그아웃",
+            description = "사용자의 액세스 토큰으로 로그아웃합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "로그아웃 성공"),
+            @ApiResponse(responseCode = "400", description = "로그아웃 실패", content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
+    })
+    @PostMapping("/logout")
+    public ResponseEntity<ApiSuccessResponse<Void>> logout(HttpServletRequest request, HttpServletResponse response) {
+        authService.logout(request);
+
+        ResponseCookie deleteCookie = ResponseCookie.from("refreshToken", "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .sameSite("Strict")
+                .maxAge(0) // 쿠키 삭제
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, deleteCookie.toString());
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+
     }
 }

@@ -12,7 +12,7 @@ public record ApiSuccessResponse<T>(
         @Schema(description = "응답 데이터")
         T data,
 
-        @Schema(description = "API 응답 시간", example = "2025-05-21T13:50:00")
+        @Schema(description = "API 응답 시간", example = "2025-05-21T13:50:00" , type = "string", format = "date-time")
         LocalDateTime timestamp
 ) {
     public static <T> ApiSuccessResponse<T> success(T data) {

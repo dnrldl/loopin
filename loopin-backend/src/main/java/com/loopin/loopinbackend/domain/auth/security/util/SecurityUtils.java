@@ -16,11 +16,23 @@ public class SecurityUtils {
         }
 
         Object principal = auth.getPrincipal();
-        if (principal instanceof CustomUserDetails userDetails) {
-            return userDetails.user();
+        if (principal instanceof CustomUserDetails(User user)) {
+            return user;
         }
 
         throw new UnauthorizedAccessException();
+    }
+
+    public static boolean isCurrentUserAdmin() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            return false;
+        }
+        Object principal = auth.getPrincipal();
+        if (principal instanceof CustomUserDetails) {
+            return true;
+        }
+        return false;
     }
 
     public static String getCurrentUsername() {

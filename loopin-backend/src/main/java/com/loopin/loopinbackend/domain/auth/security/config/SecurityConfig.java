@@ -1,9 +1,8 @@
 package com.loopin.loopinbackend.domain.auth.security.config;
 
+import com.loopin.loopinbackend.domain.auth.jwt.filter.JwtAuthenticationFilter;
 import com.loopin.loopinbackend.domain.auth.security.entrypoint.CustomAuthenticationEntryPoint;
 import com.loopin.loopinbackend.domain.auth.security.handler.CustomAccessDeniedHandler;
-import com.loopin.loopinbackend.domain.auth.security.matcher.RequestMatcher;
-import com.loopin.loopinbackend.domain.auth.jwt.filter.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -56,6 +55,8 @@ public class SecurityConfig {
 
                         // 게시글 조회 허용
                         .requestMatchers(HttpMethod.GET, "/api/posts", "/api/posts/*").permitAll()
+
+                        .requestMatchers(HttpMethod.POST, "/api/posts/make").permitAll()
 
                         // 댓글 조회 허용
                         .requestMatchers(HttpMethod.GET, "/api/posts/*/comments").permitAll()

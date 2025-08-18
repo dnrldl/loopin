@@ -2,9 +2,10 @@ package com.loopin.loopinbackend.domain.post.service.query;
 
 import com.loopin.loopinbackend.domain.post.dto.FlatCommentDto;
 import com.loopin.loopinbackend.domain.comment.dto.response.CommentResponse;
-import com.loopin.loopinbackend.domain.post.dto.response.PostInfoResponse;
+import com.loopin.loopinbackend.domain.post.dto.response.PostDetailResponse;
 import com.loopin.loopinbackend.domain.post.qeury.PostSearchCond;
 import com.loopin.loopinbackend.domain.post.repository.query.PostQueryRepository;
+import com.loopin.loopinbackend.domain.postlike.repository.PostLikeRepository;
 import com.loopin.loopinbackend.global.response.PageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -19,34 +20,37 @@ import java.util.*;
 public class PostQueryServiceImpl implements PostQueryService {
 
     private final PostQueryRepository postQueryRepository;
+    private final PostLikeRepository postLikeRepository;
     private final RedisTemplate<String, Object> redisTemplate;
 
     @Override
     @Transactional(readOnly = true)
-    public PostInfoResponse getPostInfo(Long postId, Long userId) {
+    public PostDetailResponse getPostInfo(Long postId, Long userId) {
         String redisKey = "post:" + postId + ":likes";
         Boolean isLiked = redisTemplate.opsForSet().isMember(redisKey, userId);
 
-        PostInfoResponse response = postQueryRepository.findPostById(postId);
+        PostDetailResponse response = postQueryRepository.findPostById(postId);
 
-        if (isLiked) response.setIsLiked(true);
+        if (Boolean.TRUE.equals(isLiked)) response.setIsLiked(true);
 
         return response;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<PostInfoResponse> getPosts(PostSearchCond condition, Long userId) {
+    public PageResponse<PostDetailResponse> getPosts(PostSearchCond condition, Long userId) {
+
         int offset = condition.getPage() * condition.getSize();
 
-        List<PostInfoResponse> contents = postQueryRepository.findPosts(offset, condition);
+        List<PostDetailResponse> contents = postQueryRepository.findPosts(offset, condition, userId);
 
-        for (PostInfoResponse content: contents) {
-            String redisKey = "post:" + content.getId() + ":likes";
-            Boolean isLiked = redisTemplate.opsForSet().isMember(redisKey, userId);
-
-            if (isLiked) content.setIsLiked(true);
-        }
+//        for (PostInfoResponse content: contents) {
+////            String redisKey = "post:" + content.getId() + ":likes";
+////            Boolean isLiked = redisTemplate.opsForSet().isMember(redisKey, userId);
+//            boolean isLiked = postLikeRepository.existsByPostIdAndUserId(content.getId(), userId);
+//
+//            if (isLiked) content.setIsLiked(true);
+//        }
 
         Long count = postQueryRepository.countPosts();
 

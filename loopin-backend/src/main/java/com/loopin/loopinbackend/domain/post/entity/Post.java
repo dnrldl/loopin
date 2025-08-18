@@ -17,7 +17,7 @@ public class Post extends BaseAuditingEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 4000)
     private String content;
 
     @Column(nullable = false)

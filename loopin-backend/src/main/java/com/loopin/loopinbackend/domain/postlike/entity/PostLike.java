@@ -18,4 +18,8 @@ public class PostLike extends BaseTimeEntity {
     private Long postId;
     @Id
     private Long userId;
+
+    public static PostLike of(Long postId, Long userId) {
+        return new PostLike(postId, userId);
+    }
 }
