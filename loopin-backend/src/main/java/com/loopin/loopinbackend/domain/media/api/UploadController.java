@@ -40,7 +40,7 @@ public class UploadController {
                 .collect(Collectors.toList());
 
         List<PresignDtos.PresignUrlDetail> presignUrlDetails = presignService.generatePresignedUrls(policy.resolvePathPrefix(req.pathPrefix()), files);
-        return ResponseEntity.ok(ApiSuccessResponse.success(presignUrlDetails));
+        return ResponseEntity.ok(ApiSuccessResponse.of(presignUrlDetails));
     }
 
 }

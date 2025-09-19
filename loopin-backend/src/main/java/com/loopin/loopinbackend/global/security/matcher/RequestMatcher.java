@@ -1,4 +1,4 @@
-package com.loopin.loopinbackend.domain.auth.security.matcher;
+package com.loopin.loopinbackend.global.security.matcher;
 
 public class RequestMatcher {
     public static final String[] PERMIT_PATH = {

@@ -1,12 +1,11 @@
 package com.loopin.loopinbackend.domain.comment.contoller;
 
 import com.loopin.loopinbackend.domain.auth.model.CustomUserDetails;
-import com.loopin.loopinbackend.domain.auth.security.util.SecurityUtils;
+import com.loopin.loopinbackend.global.security.util.SecurityUtils;
 import com.loopin.loopinbackend.domain.comment.dto.request.CommentCreateRequest;
 import com.loopin.loopinbackend.domain.comment.dto.response.CommentResponse;
 import com.loopin.loopinbackend.domain.comment.service.command.CommentService;
 import com.loopin.loopinbackend.domain.comment.service.query.CommentQueryService;
-import com.loopin.loopinbackend.domain.post.dto.request.PostCreateRequest;
 import com.loopin.loopinbackend.global.response.ApiErrorResponse;
 import com.loopin.loopinbackend.global.response.ApiSuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -46,7 +45,7 @@ public class CommentController {
         if (userDetails != null) userId = userDetails.getUserId();
 
         List<CommentResponse> comments = commentQueryService.getComments(postId, userId);
-        return ResponseEntity.ok(ApiSuccessResponse.success(comments));
+        return ResponseEntity.ok(ApiSuccessResponse.of(comments));
     }
 
     // private
@@ -63,6 +62,6 @@ public class CommentController {
 
         Long commentId = commentService.createComment(request, postId, currentUserId);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiSuccessResponse.success(commentId));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiSuccessResponse.of(commentId));
     }
 }

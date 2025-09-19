@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 import static com.loopin.loopinbackend.global.constant.ValidationConstant.*;
 
@@ -15,6 +16,7 @@ import static com.loopin.loopinbackend.global.constant.ValidationConstant.*;
 @Builder
 @AllArgsConstructor
 @Schema(name = "UserLoginRequest", description = "유저 로그인 요청 DTO")
+@ToString
 public class UserLoginRequest {
         @Schema(description = "이메일", example = "loopin@loopin.com")
         @NotBlank(message = REQUIRED_EMAIL)

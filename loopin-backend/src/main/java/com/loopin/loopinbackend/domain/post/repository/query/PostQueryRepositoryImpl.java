@@ -11,17 +11,12 @@ import com.loopin.loopinbackend.domain.post.qeury.PostSearchCond;
 import com.loopin.loopinbackend.domain.postlike.entity.QPostLike;
 import com.loopin.loopinbackend.domain.user.entity.QUser;
 import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,9 +25,6 @@ import static com.querydsl.jpa.JPAExpressions.select;
 @Repository
 @RequiredArgsConstructor
 public class PostQueryRepositoryImpl implements PostQueryRepository {
-
-    @PersistenceContext
-    private final EntityManager em;
 
     private final JPAQueryFactory queryFactory;
     private final RedisTemplate<String, Object> redisTemplate;

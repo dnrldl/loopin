@@ -44,7 +44,7 @@ public class UserController {
         System.out.println("request.toString() = " + request.toString());
         String response = userService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiSuccessResponse.success(response));
+                .body(ApiSuccessResponse.of(response));
     }
 
     @Operation(summary = "이메일 중복 체크",
@@ -55,7 +55,7 @@ public class UserController {
     })
     @GetMapping("/check/email")
     public ResponseEntity<ApiSuccessResponse<Boolean>> checkEmail(@RequestParam String email) {
-        return ResponseEntity.ok(ApiSuccessResponse.success(userService.checkEmail(email)));
+        return ResponseEntity.ok(ApiSuccessResponse.of(userService.checkEmail(email)));
     }
 
     @Operation(summary = "닉네임 중복 체크",
@@ -66,7 +66,7 @@ public class UserController {
     })
     @GetMapping("/check/nickname")
     public ResponseEntity<ApiSuccessResponse<Boolean>> checkNickname(@RequestParam String nickname) {
-        return ResponseEntity.ok(ApiSuccessResponse.success(userService.checkNickname(nickname)));
+        return ResponseEntity.ok(ApiSuccessResponse.of(userService.checkNickname(nickname)));
     }
 
     // private
@@ -81,7 +81,7 @@ public class UserController {
     public ResponseEntity<ApiSuccessResponse<UserInfoResponse>> getUserInfo(@PathVariable Long userId) {
         UserInfoResponse res = userService.getUserInfo(userId);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiSuccessResponse.success(res));
+                .body(ApiSuccessResponse.of(res));
     }
 
     // private
@@ -96,7 +96,7 @@ public class UserController {
     public ResponseEntity<ApiSuccessResponse<UserInfoResponse>> getMyInfo() {
         UserInfoResponse res = userService.getMyInfo();
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiSuccessResponse.success(res));
+                .body(ApiSuccessResponse.of(res));
     }
 
     @Operation(summary = "내 비밀번호 변경",
@@ -112,7 +112,7 @@ public class UserController {
             @Valid @RequestBody UserPasswordUpdateRequest request
     ) {
         userService.updatePassword(request.getOldPassword(), request.getNewPassword());
-        return ResponseEntity.ok(ApiSuccessResponse.success(null));
+        return ResponseEntity.ok(ApiSuccessResponse.of(null));
     }
 
     @Operation(summary = "내 프로필 변경",
@@ -128,7 +128,7 @@ public class UserController {
             @Valid @RequestBody UserProfileUpdateRequest request
     ) {
         userService.updateProfile(request);
-        return ResponseEntity.ok(ApiSuccessResponse.success(null));
+        return ResponseEntity.ok(ApiSuccessResponse.of(null));
     }
 
     @Operation(summary = "회원 탈퇴",
@@ -145,6 +145,6 @@ public class UserController {
             ) {
         userService.deleteUser(request.getPassword());
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
-                .body(ApiSuccessResponse.success(null));
+                .body(ApiSuccessResponse.of(null));
     }
 }

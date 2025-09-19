@@ -1,4 +1,4 @@
-package com.loopin.loopinbackend.domain.auth.security.handler;
+package com.loopin.loopinbackend.global.security.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.loopin.loopinbackend.global.error.ErrorCode;

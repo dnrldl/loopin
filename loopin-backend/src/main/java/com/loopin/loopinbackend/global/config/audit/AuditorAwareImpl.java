@@ -1,6 +1,6 @@
 package com.loopin.loopinbackend.global.config.audit;
 
-import com.loopin.loopinbackend.domain.auth.security.util.SecurityUtils;
+import com.loopin.loopinbackend.global.security.util.SecurityUtils;
 import lombok.NonNull;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.stereotype.Component;

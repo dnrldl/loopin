@@ -1,6 +1,6 @@
 package com.loopin.loopinbackend.domain.user.service;
 
-import com.loopin.loopinbackend.domain.auth.security.util.SecurityUtils;
+import com.loopin.loopinbackend.global.security.util.SecurityUtils;
 import com.loopin.loopinbackend.domain.user.dto.request.UserProfileUpdateRequest;
 import com.loopin.loopinbackend.domain.user.dto.request.UserRegisterRequest;
 import com.loopin.loopinbackend.domain.user.dto.response.UserInfoResponse;

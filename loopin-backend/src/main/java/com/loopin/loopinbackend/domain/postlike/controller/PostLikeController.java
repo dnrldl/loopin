@@ -1,6 +1,6 @@
 package com.loopin.loopinbackend.domain.postlike.controller;
 
-import com.loopin.loopinbackend.domain.auth.security.util.SecurityUtils;
+import com.loopin.loopinbackend.global.security.util.SecurityUtils;
 import com.loopin.loopinbackend.domain.postlike.service.command.PostLikeService;
 import com.loopin.loopinbackend.global.response.ApiErrorResponse;
 import com.loopin.loopinbackend.global.response.ApiSuccessResponse;
@@ -37,7 +37,7 @@ public class PostLikeController {
         postLikeService.like(postId, userId);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
-                .body(ApiSuccessResponse.success(null));
+                .body(ApiSuccessResponse.of(null));
     }
 
     @Operation(summary = "좋아요 삭제",
@@ -53,6 +53,6 @@ public class PostLikeController {
         postLikeService.unlike(postId, userId);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
-                .body(ApiSuccessResponse.success(null));
+                .body(ApiSuccessResponse.of(null));
     }
 }

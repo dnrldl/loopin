@@ -17,7 +17,7 @@ public record ApiErrorResponse(
         String message,
 
         @Schema(description = "HTTP 상태 코드", example = "400")
-        int status,
+        Integer status,
 
         @Schema(description = "API 응답 시간", example = "2025-05-21T13:50:00")
         LocalDateTime timestamp
@@ -38,6 +38,16 @@ public record ApiErrorResponse(
                 code,
                 message,
                 status,
+                LocalDateTime.now()
+        );
+    }
+
+    public static ApiErrorResponse of(boolean success, String code, String message) {
+        return new ApiErrorResponse(
+                success,
+                code,
+                message,
+                400,
                 LocalDateTime.now()
         );
     }

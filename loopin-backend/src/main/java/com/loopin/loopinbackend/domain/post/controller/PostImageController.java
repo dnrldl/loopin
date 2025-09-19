@@ -19,7 +19,7 @@ public class PostImageController {
     @PostMapping("/register")
     public ResponseEntity<ApiSuccessResponse<String>> register(@PathVariable Long postId, @RequestBody @Valid List<ImageRegisterRequest> req) {
         postImageService.registerImages(postId, req);
-        return ResponseEntity.ok(ApiSuccessResponse.success("이미지 등록 성공"));
+        return ResponseEntity.ok(ApiSuccessResponse.of("이미지 등록 성공"));
     }
 
     @PutMapping("/replace")
