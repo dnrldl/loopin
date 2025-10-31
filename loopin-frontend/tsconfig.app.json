@@ -1,27 +1,32 @@
+// prettier-ignore
 {
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
-    "target": "ES2020",
+    "target": "ES2022",
     "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "module": "ESNext",
-    "skipLibCheck": true,
+    "types": ["vite/client"],
+    "skipLibCheck": true,                 // 모듈 타입 검사 생략
 
     /* Bundler mode */
-    "moduleResolution": "bundler",
+    "moduleResolution": "bundler",        // 모듈 해석을 번들러에 위임
+    "isolatedModules": true,              // 파일 각각을 안전하게 트랜스파일 가능한지 검사
     "allowImportingTsExtensions": true,
-    "verbatimModuleSyntax": true,
-    "moduleDetection": "force",
-    "noEmit": true,
-    "jsx": "react-jsx",
+    "verbatimModuleSyntax": true,         // import, export를 컴파일시 그대로 냅둠
+    "moduleDetection": "force",           // 모든 파일을 모듈로 처리
+    "noEmit": true,                       // 파일 생성 방지 (번들러가 js 생성)
+    "jsx": "react-jsx",                   // jsx 문법을 어떤 트랜스파일 방식으로 바꿀지 지정하는 옵션
 
     /* Linting */
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "erasableSyntaxOnly": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "strict": true,                       // 타입 검사
+    "erasableSyntaxOnly": true,           // 타입만 지움 -> 최신 js문법 유지
+    "noUncheckedSideEffectImports": true, // 변수 지정없이 import 방지
+
+    /* path */
+    "baseUrl": ".",
+    "paths": { "@/*": ["./src/*"] }
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
 }
