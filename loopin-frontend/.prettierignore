@@ -1,0 +1,35 @@
+# 빌드 결과물
+dist
+build
+
+# 의존성
+node_modules
+
+# 환경 변수
+.env
+.env.*
+
+# 잠금 파일 및 캐시
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+.vscode
+.idea
+.DS_Store
+
+# Git 관련
+.git
+.gitignore
+
+# 특정 형식 파일 (Prettier로 포맷할 필요 없는)
+*.min.js
+*.map
+*.svg
+*.ico
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.mp4
+*.webm
+*.pdf
